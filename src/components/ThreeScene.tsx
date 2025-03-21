@@ -78,10 +78,10 @@ const CameraController = () => {
     camera.position.set(0, 0, 5);
   }, [camera]);
 
-  return <OrbitControls enableZoom={false} enablePan={false} enableRotate={true} minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 1.5} target={[0, 0, 0]} args={[camera, gl.domElement]} />;
+  return <OrbitControls enableZoom={false} enablePan={false} enableRotate={true} minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 1.5} target={[0, 0, 0] as unknown as THREE.Vector3} args={[camera, gl.domElement]} />;
 };
 
-const MovingSphere = ({ position = [0, 0, 0], color = '#4f86f7', size = 0.2 }) => {
+const MovingSphere = ({ position = [0, 0, 0], color = '#4f86f7', size = 0.2 }: { position?: [number, number, number], color?: string, size?: number }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   
   useFrame(({ clock }) => {

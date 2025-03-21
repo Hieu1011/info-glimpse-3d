@@ -26,8 +26,9 @@ export const NavBar = () => {
       const sections = document.querySelectorAll('section[id]');
       
       sections.forEach((section) => {
-        const sectionTop = section.offsetTop - 100;
-        const sectionHeight = section.offsetHeight;
+        const htmlElement = section as HTMLElement; // Type assertion to HTMLElement
+        const sectionTop = htmlElement.offsetTop - 100;
+        const sectionHeight = htmlElement.offsetHeight;
         const sectionId = section.getAttribute('id') || '';
         
         if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
