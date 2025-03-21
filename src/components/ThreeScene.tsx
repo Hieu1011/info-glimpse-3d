@@ -1,7 +1,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, OrbitControls, PerspectiveCamera, Environment, Text, Float } from '@react-three/drei';
+import { useGLTF, OrbitControls, PerspectiveCamera, Text, Float } from '@react-three/drei';
 import * as THREE from 'three';
 
 const Particles = ({ count = 500 }) => {
@@ -120,7 +120,8 @@ export const ThreeScene = () => {
         
         <Particles count={300} />
         
-        <Environment preset="city" />
+        {/* Remove Environment component that's causing errors */}
+        <hemisphereLight intensity={0.5} />
       </Canvas>
     </div>
   );
