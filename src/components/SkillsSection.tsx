@@ -77,8 +77,9 @@ const SkillBar = ({ name, level, icon }: Skill) => {
       </div>
       <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
         <div 
-          className="h-full bg-primary transition-all duration-1000 ease-out rounded-full" 
-          style={{ width: `${level}%`, transformOrigin: 'left', transform: 'scaleX(0)' }}
+          className="h-full bg-primary transition-all duration-1000 ease-out rounded-full skill-bar" 
+          style={{ width: '0%', transformOrigin: 'left' }}
+          data-width={`${level}%`}
         />
       </div>
     </div>
@@ -94,27 +95,28 @@ const SkillsSection = () => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-slide-up');
+            entry.target.classList.remove('opacity-0');
             
-            // Animate skill bars when they come into view
-            const skillBars = entry.target.querySelectorAll('.animate-skill-bar');
-            skillBars.forEach((bar, index) => {
+            // Find and animate skill bars within this element
+            const skillBars = entry.target.querySelectorAll('.skill-bar');
+            skillBars.forEach((bar) => {
+              const htmlBar = bar as HTMLElement;
+              const targetWidth = htmlBar.dataset.width || '0%';
+              
+              // Delay each bar's animation slightly
               setTimeout(() => {
-                (bar as HTMLElement).style.transform = 'scaleX(1)';
-              }, 300 + index * 100);
+                htmlBar.style.width = targetWidth;
+              }, 200);
             });
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: "0px 0px -100px 0px" }
     );
     
     if (containerRef.current) {
       const elements = containerRef.current.querySelectorAll('.animate-on-scroll');
       elements.forEach((el) => observer.observe(el));
-      
-      // Set skill bars to be animated
-      const skillBars = containerRef.current.querySelectorAll('.h-full.bg-primary');
-      skillBars.forEach((bar) => bar.classList.add('animate-skill-bar'));
     }
     
     return () => {
@@ -126,12 +128,12 @@ const SkillsSection = () => {
   }, []);
   
   return (
-    <section id="skills" className="py-20 bg-background/50" ref={containerRef}>
-      <div className="section-container">
+    <section id="skills" className="py-20 bg-background/60 backdrop-blur-sm" ref={containerRef}>
+      <div className="section-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 animate-on-scroll opacity-0">
           <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Expertise</h2>
-          <h3 className="section-title">My Skills</h3>
-          <p className="section-subtitle max-w-2xl mx-auto">
+          <h3 className="text-3xl md:text-4xl font-bold mt-2">My Skills</h3>
+          <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
             I've worked with a range of technologies in the web development world, from front-end to back-end.
           </p>
         </div>
@@ -145,7 +147,7 @@ const SkillsSection = () => {
         </div>
         
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="glass-panel p-6 animate-on-scroll opacity-0" style={{ animationDelay: '0.1s' }}>
+          <div className="glass-panel p-6 animate-on-scroll opacity-0 backdrop-blur-md bg-background/70 border border-border/50 rounded-xl" style={{ animationDelay: '0.1s' }}>
             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                 <rect width="18" height="10" x="3" y="11" rx="2" />
@@ -161,7 +163,7 @@ const SkillsSection = () => {
             </p>
           </div>
           
-          <div className="glass-panel p-6 animate-on-scroll opacity-0" style={{ animationDelay: '0.3s' }}>
+          <div className="glass-panel p-6 animate-on-scroll opacity-0 backdrop-blur-md bg-background/70 border border-border/50 rounded-xl" style={{ animationDelay: '0.3s' }}>
             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                 <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
@@ -177,7 +179,7 @@ const SkillsSection = () => {
             </p>
           </div>
           
-          <div className="glass-panel p-6 animate-on-scroll opacity-0" style={{ animationDelay: '0.5s' }}>
+          <div className="glass-panel p-6 animate-on-scroll opacity-0 backdrop-blur-md bg-background/70 border border-border/50 rounded-xl" style={{ animationDelay: '0.5s' }}>
             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />

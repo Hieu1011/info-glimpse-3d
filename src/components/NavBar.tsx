@@ -24,22 +24,24 @@ export const NavBar = () => {
       const scrollPosition = window.scrollY;
       setScrolled(scrollPosition > 50);
       
+      // Improved section detection
       const sections = document.querySelectorAll('section[id]');
       
       sections.forEach((section) => {
-        const htmlElement = section as HTMLElement; // Type assertion to HTMLElement
-        const sectionTop = htmlElement.offsetTop - 100;
-        const sectionHeight = htmlElement.offsetHeight;
+        const htmlElement = section as HTMLElement; // Type assertion
         const sectionId = section.getAttribute('id') || '';
+        const sectionTop = htmlElement.offsetTop - 100;
+        const sectionBottom = sectionTop + htmlElement.offsetHeight;
         
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
           setActiveSection(sectionId);
         }
       });
     };
     
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initialize on mount
+    // Run once on mount to initialize
+    setTimeout(handleScroll, 100);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -61,7 +63,7 @@ export const NavBar = () => {
     <header 
       className={cn(
         "fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 transition-all duration-300",
-        scrolled ? "bg-background/80 backdrop-blur-lg shadow-sm" : "bg-transparent"
+        scrolled ? "bg-background/90 backdrop-blur-lg shadow-sm" : "bg-background/50 backdrop-blur-sm"
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -82,8 +84,10 @@ export const NavBar = () => {
               key={item.href}
               href={item.href}
               className={cn(
-                "nav-link",
-                activeSection === item.href.slice(1) && "active"
+                "nav-link transition-colors relative",
+                activeSection === item.href.slice(1) 
+                  ? "text-primary font-medium after:absolute after:left-0 after:bottom-0 after:w-full after:h-0.5 after:bg-primary" 
+                  : "text-foreground hover:text-primary"
               )}
               onClick={(e) => {
                 e.preventDefault();
@@ -120,7 +124,7 @@ export const NavBar = () => {
       
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-background/90 backdrop-blur-lg shadow-md border-b border-border/50 animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-lg shadow-md border-b border-border/50 animate-fade-in">
           <div className="px-4 py-3 space-y-2">
             {navItems.map((item) => (
               <a

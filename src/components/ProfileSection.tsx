@@ -10,10 +10,11 @@ const ProfileSection = () => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in');
+            entry.target.classList.remove('opacity-0');
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: "0px 0px -100px 0px" }
     );
     
     if (containerRef.current) {
@@ -30,8 +31,8 @@ const ProfileSection = () => {
   }, []);
   
   return (
-    <section id="about" className="min-h-screen flex items-center pt-20 pb-16" ref={containerRef}>
-      <div className="section-container">
+    <section id="about" className="min-h-screen flex items-center pt-24 pb-16" ref={containerRef}>
+      <div className="section-container w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <div className="space-y-2 animate-on-scroll opacity-0" style={{ animationDelay: '0.1s' }}>
@@ -75,7 +76,7 @@ const ProfileSection = () => {
           
           <div className="animate-on-scroll opacity-0" style={{ animationDelay: '0.7s' }}>
             <div className="relative">
-              <div className="glass-panel p-6 rounded-2xl">
+              <div className="glass-panel p-6 rounded-2xl backdrop-blur-md bg-background/70 border border-border/50">
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <h3 className="text-xl font-medium">About Me</h3>

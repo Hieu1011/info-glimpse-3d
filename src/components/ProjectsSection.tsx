@@ -36,7 +36,7 @@ const projects: Project[] = [
 const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
   return (
     <div 
-      className="group relative overflow-hidden rounded-lg animate-on-scroll opacity-0"
+      className="group relative overflow-hidden rounded-lg animate-on-scroll opacity-0 shadow-md border border-border/50"
       style={{ animationDelay: `${0.2 * index}s` }}
     >
       <div className="aspect-video overflow-hidden">
@@ -72,6 +72,18 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
           </svg>
         </a>
       </div>
+      
+      {/* Always visible content */}
+      <div className="p-4 bg-background">
+        <h3 className="text-lg font-medium mb-1">{project.title}</h3>
+        <div className="flex flex-wrap gap-1 mt-2">
+          {project.tags.map((tag) => (
+            <span key={tag} className="px-2 py-0.5 bg-primary/10 rounded-full text-xs font-medium text-primary">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
@@ -85,10 +97,11 @@ const ProjectsSection = () => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in');
+            entry.target.classList.remove('opacity-0');
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: "0px 0px -100px 0px" }
     );
     
     if (containerRef.current) {
@@ -105,12 +118,12 @@ const ProjectsSection = () => {
   }, []);
   
   return (
-    <section id="projects" className="py-20" ref={containerRef}>
-      <div className="section-container">
+    <section id="projects" className="py-20 bg-background/80 backdrop-blur-sm" ref={containerRef}>
+      <div className="section-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 animate-on-scroll opacity-0">
           <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Portfolio</h2>
-          <h3 className="section-title">Featured Projects</h3>
-          <p className="section-subtitle max-w-2xl mx-auto">
+          <h3 className="text-3xl md:text-4xl font-bold mt-2">Featured Projects</h3>
+          <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
             Explore some of my recent work. These projects showcase my skills in web development, 3D graphics, and user interface design.
           </p>
         </div>
