@@ -21,7 +21,7 @@ const Index = () => {
   }, []);
   
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen overflow-x-hidden">
       {isLoading ? (
         <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
           <div className="flex flex-col items-center">
@@ -31,20 +31,22 @@ const Index = () => {
         </div>
       ) : (
         <>
-          <ThreeScene />
-          <AnimatedBackground />
+          <div className="fixed inset-0 z-0">
+            <ThreeScene />
+            <AnimatedBackground />
+          </div>
           
           <div className="relative z-10">
             <NavBar />
             
-            <main>
+            <main className="relative z-10">
               <ProfileSection />
               <SkillsSection />
               <ProjectsSection />
               <ContactSection />
             </main>
             
-            <footer className="bg-background border-t border-border py-8">
+            <footer className="relative z-10 bg-background/70 backdrop-blur-sm border-t border-border py-8">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
                 <p className="text-muted-foreground">&copy; {new Date().getFullYear()} Your Name. All rights reserved.</p>
                 
@@ -59,10 +61,12 @@ const Index = () => {
               </div>
             </footer>
             
-            <div className="scroll-indicator">
-              <div className="scroll-indicator-dot"></div>
-              <div className="scroll-indicator-dot"></div>
-              <div className="scroll-indicator-dot"></div>
+            <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+              <div className="scroll-indicator">
+                <div className="scroll-indicator-dot"></div>
+                <div className="scroll-indicator-dot"></div>
+                <div className="scroll-indicator-dot"></div>
+              </div>
             </div>
           </div>
         </>
