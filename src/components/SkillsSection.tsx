@@ -9,8 +9,8 @@ interface Skill {
 
 const skills: Skill[] = [
   {
-    name: "React",
-    level: 90,
+    name: "React Native",
+    level: 95,
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
         <path d="M12 13.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
@@ -19,17 +19,17 @@ const skills: Skill[] = [
     ),
   },
   {
-    name: "Three.js",
-    level: 85,
+    name: "Redux/Context API",
+    level: 90,
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-        <path d="M12 2L2 19h20L12 2zm0 4.6L18.07 17H5.93L12 6.6z" />
+        <path d="M16.63 16.563c.885-.092 1.557-.863 1.527-1.788a1.723 1.723 0 0 0-1.71-1.665h-.062c-.947.03-1.68.832-1.65 1.788.03.463.215.863.493 1.14-1.042 2.062-2.632 3.574-5.02 4.838-1.588.863-3.24 1.172-4.885.956-1.372-.185-2.446-.802-3.116-1.818-.977-1.51-1.073-3.143-.246-4.777.617-1.232 1.588-2.154 2.2-2.585.092-.092.215-.154.308-.216a1.78 1.78 0 0 0-.37-.587c-3.054-.091-4.363 1.666-4.67 2.402-.823 1.972-.308 3.883 1.073 5.362.915 1.014 2.354 1.57 4.147 1.57.462 0 .947-.03 1.434-.123 3.054-.493 5.358-2.093 6.68-4.407l.03.03zm3.732-3.22c-1.62-1.912-4-2.956-6.741-2.956h-.34a1.66 1.66 0 0 0-1.435-.832h-.061c-.946.03-1.681.832-1.65 1.788.03.925.793 1.665 1.71 1.665h.062c.493-.03.946-.277 1.228-.647h.37c1.62 0 3.147.463 4.532 1.357 1.064.678 1.835 1.572 2.261 2.648.37.894.34 1.757-.092 2.495-.648 1.172-1.743 1.818-3.178 1.818-1.835 0-3.27-.833-4.117-1.665-.123-.123-.216-.215-.339-.339-.215.185-.493.493-.71.71.915.894 2.17 1.818 4.054 2.034 1.897.216 3.732-.462 4.763-1.88.916-1.264 1.073-3.144.401-4.838-.03 0-.03 0-.062-.031a6.037 6.037 0 0 0-.823-1.017c-.123-.123-.246-.246-.4-.37l.03-.03zm-13.12.522c.03.926.794 1.666 1.71 1.666h.062c.947-.03 1.68-.832 1.65-1.788-.03-.925-.792-1.665-1.711-1.665h-.062c-.061 0-.154 0-.215.03-.555-1.326-.895-2.741-.895-4.16 0-2.31.977-4.437 2.6-6.164C12.257.492 14.426 0 16.075 0c3.27 0 4.762 2.033 4.885 4.036v.123c.37.154.802.308 1.228.462a31.45 31.45 0 0 0-.185-1.757C21.696 1.05 19.526 0 17.146 0c-2.23 0-4.824.647-6.802 2.525-2.354 2.218-3.67 5.17-3.67 8.005 0 1.48.277 2.956.823 4.345h.062c.123-.03.246-.03.37-.03h.061z" />
       </svg>
     ),
   },
   {
-    name: "TypeScript",
-    level: 85,
+    name: "JavaScript/TypeScript",
+    level: 90,
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
         <path d="M3 3h18v18H3V3zm10 4v2h2.67A2.31 2.31 0 0 1 19 11v4h-2v-4a.31.31 0 0 0-.33-.33H13V19H9v-8h4zm-4-2v2h2v8h2V7h2V5H9z"/>
@@ -37,29 +37,29 @@ const skills: Skill[] = [
     ),
   },
   {
-    name: "CSS/Tailwind",
-    level: 95,
+    name: "UI/UX For Mobile",
+    level: 85,
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-        <path d="M6 2l2 18h8l2-18H6zm10.6 5h-5.8l.2 2h5.4l-.6 5h-3.6l-.2 2h3.4l-.4 3h-3l-.2 2h7l1.4-12h-3.2z" />
+        <path d="M17.5 12a1.5 1.5 0 01-1.5-1.5A1.5 1.5 0 0117.5 9a1.5 1.5 0 011.5 1.5 1.5 1.5 0 01-1.5 1.5m-3-4A1.5 1.5 0 0113 6.5 1.5 1.5 0 0114.5 5 1.5 1.5 0 0116 6.5 1.5 1.5 0 0114.5 8m-5 0A1.5 1.5 0 018 6.5 1.5 1.5 0 019.5 5 1.5 1.5 0 0111 6.5 1.5 1.5 0 019.5 8m-3 4A1.5 1.5 0 015 10.5 1.5 1.5 0 016.5 9 1.5 1.5 0 018 10.5 1.5 1.5 0 016.5 12M12 3a9 9 0 00-9 9 9 9 0 009 9 9 9 0 009-9 9 9 0 00-9-9m0 16a7 7 0 01-7-7 7 7 0 017-7 7 7 0 017 7 7 7 0 01-7 7m0-2a5 5 0 00-5-5c0 2.76 2.24 5 5 5z" />
       </svg>
     ),
   },
   {
-    name: "JavaScript",
-    level: 90,
+    name: "Expo",
+    level: 92,
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-        <path d="M3 3h18v18H3V3zm16.5 10.5c0 2.25-1.5 3.6-3.6 3.6-1.95 0-3-1.2-3.45-2.4l1.95-.75c.15.6.6 1.05 1.35 1.05.9 0 1.35-.45 1.35-1.35V8.4h2.25v5.1h.15zM9.75 13.95c.3.6.9.9 1.5.9.6 0 1.05-.3 1.05-.75 0-.45-.3-.6-1.05-.9l-.3-.15c-1.05-.45-1.8-1.05-1.8-2.25 0-1.05.9-1.95 2.1-1.95 1.05 0 1.8.45 2.25 1.5l-1.65.9c-.3-.45-.45-.6-.75-.6-.3 0-.6.15-.6.45 0 .3.3.45.75.6l.3.15c1.2.6 1.95 1.05 1.95 2.4 0 1.35-1.05 2.1-2.55 2.1-1.35 0-2.4-.75-2.7-1.8l1.5-.45z" />
+        <path d="M11.95 4.83L0 19.52h23.91L11.95 4.83zm0 4.21l3.97 6.29H7.98l3.97-6.29z" />
       </svg>
     ),
   },
   {
-    name: "Node.js",
+    name: "Native APIs",
     level: 80,
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-        <path d="M12 1.85c-.27 0-.55.07-.78.2l-7.44 4.3c-.48.28-.78.8-.78 1.36v8.58c0 .56.3 1.08.78 1.36l1.95 1.12c.95.46 1.27.47 1.71.47 1.4 0 2.2-.85 2.2-2.33V8.17c0-.12-.1-.22-.22-.22h-.93c-.13 0-.23.1-.23.22v8.35c0 .66-.68 1.31-1.77.76l-2.05-1.17c-.07-.05-.12-.13-.12-.22V7.71c0-.1.04-.18.12-.23l7.44-4.29c.06-.04.16-.04.22 0l7.44 4.29c.08.04.13.12.13.23v8.58c0 .09-.05.17-.13.22l-7.44 4.29c-.06.04-.16.04-.23 0l-1.87-1.12c-.08-.05-.18-.05-.27-.01-.75.42-.9.48-1.6.73-.18.07-.45.17.1.38l2.45 1.45c.23.13.51.2.78.2.27 0 .54-.06.78-.2l7.44-4.29c.48-.28.78-.8.78-1.36V7.71c0-.56-.3-1.08-.78-1.36l-7.44-4.3c-.23-.13-.5-.2-.78-.2M14 8c-2.12 0-3.39.89-3.39 2.39 0 1.61 1.26 2.08 3.3 2.28 2.43.24 2.62.6 2.62 1.08 0 .83-.67 1.18-2.23 1.18-1.98 0-2.4-.49-2.55-1.47-.02-.1-.11-.18-.22-.18h-.96c-.12 0-.21.09-.21.22 0 1.24.68 2.74 3.94 2.74 2.35 0 3.7-.93 3.7-2.55 0-1.61-1.08-2.03-3.37-2.34-2.31-.3-2.54-.46-2.54-1 0-.45.2-1.05 1.91-1.05 1.5 0 2.09.33 2.32 1.36.02.1.11.17.21.17h.97c.05 0 .11-.02.15-.07.04-.04.07-.1.05-.16C19.36 8.64 18.06 8 14 8z" />
+        <path d="M7.5 16.5h9v2h-9v-2zm2-14C6.29 2.5 4 4.79 4 8.5s2.29 6 5.5 6 5.5-2.29 5.5-6-2.29-6-5.5-6zm0 9C8.06 11.5 6 9.81 6 8.5s2.06-3 3.5-3 3.5 1.69 3.5 3-2.06 3-3.5 3zm9 0c-.69 0-1.25.56-1.25 1.25V15H6.75v-4.25C6.75 10.06 6.19 9.5 5.5 9.5S4.75 10.06 4.75 10.75V15a2 2 0 002 2h10.5a2 2 0 002-2v-4.25c0-.69-.56-1.25-1.25-1.25z"/>
       </svg>
     ),
   },
@@ -134,7 +134,7 @@ const SkillsSection = () => {
           <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Expertise</h2>
           <h3 className="text-3xl md:text-4xl font-bold mt-2">My Skills</h3>
           <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
-            I've worked with a range of technologies in the web development world, from front-end to back-end.
+            I've mastered a variety of technologies in the mobile app development ecosystem, from UI design to native functionality.
           </p>
         </div>
         
@@ -150,45 +150,40 @@ const SkillsSection = () => {
           <div className="glass-panel p-6 animate-on-scroll opacity-0 backdrop-blur-md bg-background/70 border border-border/50 rounded-xl" style={{ animationDelay: '0.1s' }}>
             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                <rect width="18" height="10" x="3" y="11" rx="2" />
-                <circle cx="12" cy="5" r="2" />
-                <path d="M12 7v4" />
-                <line x1="8" x2="8" y1="16" y2="16" />
-                <line x1="16" x2="16" y1="16" y2="16" />
+                <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+                <path d="M12 18h.01" />
               </svg>
             </div>
-            <h3 className="text-xl font-medium mb-2">Frontend Development</h3>
+            <h3 className="text-xl font-medium mb-2">Mobile UI Development</h3>
             <p className="text-muted-foreground">
-              Creating responsive and interactive user interfaces with React, TypeScript, and modern CSS frameworks.
+              Creating beautiful, responsive mobile interfaces with React Native, custom components, and animations that work on both iOS and Android.
             </p>
           </div>
           
           <div className="glass-panel p-6 animate-on-scroll opacity-0 backdrop-blur-md bg-background/70 border border-border/50 rounded-xl" style={{ animationDelay: '0.3s' }}>
             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-                <line x1="12" x2="12" y1="22" y2="15.5" />
-                <polyline points="22 8.5 12 15.5 2 8.5" />
-                <polyline points="2 15.5 12 8.5 22 15.5" />
-                <line x1="12" x2="12" y1="2" y2="8.5" />
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
               </svg>
             </div>
-            <h3 className="text-xl font-medium mb-2">3D Web Development</h3>
+            <h3 className="text-xl font-medium mb-2">Cross-Platform Expertise</h3>
             <p className="text-muted-foreground">
-              Building immersive 3D experiences on the web using Three.js and WebGL technologies.
+              Building apps that work seamlessly across devices and platforms with a single codebase, maximizing efficiency and consistency.
             </p>
           </div>
           
           <div className="glass-panel p-6 animate-on-scroll opacity-0 backdrop-blur-md bg-background/70 border border-border/50 rounded-xl" style={{ animationDelay: '0.5s' }}>
             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
               </svg>
             </div>
-            <h3 className="text-xl font-medium mb-2">Backend Integration</h3>
+            <h3 className="text-xl font-medium mb-2">API Integration</h3>
             <p className="text-muted-foreground">
-              Connecting frontend applications to APIs and databases to create full-stack solutions.
+              Connecting mobile apps to backend services, REST APIs, GraphQL, and third-party services for complete, data-driven applications.
             </p>
           </div>
         </div>

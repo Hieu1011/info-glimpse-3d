@@ -38,12 +38,12 @@ const ProfileSection = () => {
             <div className="space-y-2 animate-on-scroll opacity-0" style={{ animationDelay: '0.1s' }}>
               <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Hello, I'm</h2>
               <h1 className="text-4xl md:text-6xl text-primary font-bold tracking-tight">Fang</h1>
-              <p className="text-xl md:text-2xl text-muted-foreground">Mobile App Developer</p>
+              <p className="text-xl md:text-2xl text-muted-foreground">React Native Developer</p>
             </div>
             
             <p className="text-lg text-muted-foreground animate-on-scroll opacity-0" style={{ animationDelay: '0.3s' }}>
-              I'm a passionate developer with a love for creating beautiful, functional, and user-friendly mobile app experiences. 
-              With a background in design and development, I bridge the gap between aesthetics and functionality.
+              I'm a passionate mobile app developer specializing in creating beautiful, cross-platform applications with React Native. 
+              With experience in both UI/UX design and development, I transform ideas into seamless mobile experiences that users love.
             </p>
             
             <div className="flex space-x-4 animate-on-scroll opacity-0" style={{ animationDelay: '0.5s' }}>
@@ -81,16 +81,16 @@ const ProfileSection = () => {
                   <div className="space-y-2">
                     <h3 className="text-xl font-medium">About Me</h3>
                     <p className="text-muted-foreground">
-                      I have over 5 years of experience building modern web applications. My expertise includes 
-                      React, Three.js, TypeScript, and modern CSS techniques. I'm passionate about creating 
-                      immersive web experiences that delight users.
+                      I have over 4 years of experience building cross-platform mobile applications. My expertise includes 
+                      React Native, Expo, Redux, TypeScript, and mobile UI/UX design. I'm passionate about creating 
+                      smooth, intuitive mobile experiences that work flawlessly on both iOS and Android.
                     </p>
                   </div>
                   
                   <div className="space-y-2">
                     <h3 className="text-xl font-medium">Education</h3>
                     <p className="text-muted-foreground">
-                      B.S. in Software Engineering<br />
+                      B.S. in Mobile Application Development<br />
                       University of Information Technology<br />
                       2020 - 2024
                     </p>
