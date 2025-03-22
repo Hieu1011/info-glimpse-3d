@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -10,29 +11,22 @@ const ContactSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    
-    if (containerRef.current) {
-      const elements = containerRef.current.querySelectorAll('.animate-on-scroll');
-      elements.forEach((el) => observer.observe(el));
-    }
-    
-    return () => {
+    // Fix: Instead of using IntersectionObserver which may cause elements to disappear,
+    // let's directly add the animation class to all elements after a delay
+    const timer = setTimeout(() => {
       if (containerRef.current) {
         const elements = containerRef.current.querySelectorAll('.animate-on-scroll');
-        elements.forEach((el) => observer.unobserve(el));
+        elements.forEach((el, index) => {
+          // Add a staggered delay to each element for a nice effect
+          setTimeout(() => {
+            el.classList.add('animate-fade-in');
+            el.classList.remove('opacity-0');
+          }, index * 150);
+        });
       }
-    };
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, []);
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,7 +48,7 @@ const ContactSection = () => {
   return (
     <section id="contact" className="py-20 bg-background/50" ref={containerRef}>
       <div className="section-container">
-        <div className="text-center mb-12 animate-on-scroll opacity-0">
+        <div className="text-center mb-12 animate-on-scroll opacity-0" style={{ transitionDelay: '0ms' }}>
           <h2 className="text-sm font-medium text-primary tracking-widest uppercase">Get in touch</h2>
           <h3 className="section-title">Contact Me</h3>
           <p className="section-subtitle max-w-2xl mx-auto">
@@ -63,7 +57,7 @@ const ContactSection = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="space-y-8 animate-on-scroll opacity-0" style={{ animationDelay: '0.2s' }}>
+          <div className="space-y-8 animate-on-scroll opacity-0" style={{ transitionDelay: '200ms' }}>
             <div className="flex items-start space-x-4">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
@@ -134,7 +128,7 @@ const ContactSection = () => {
             </div>
           </div>
           
-          <div className="glass-panel p-8 rounded-lg animate-on-scroll opacity-0" style={{ animationDelay: '0.4s' }}>
+          <div className="glass-panel p-8 rounded-lg animate-on-scroll opacity-0" style={{ transitionDelay: '400ms' }}>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-medium">Name</label>
