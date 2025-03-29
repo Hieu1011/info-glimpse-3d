@@ -129,7 +129,7 @@ const AnimatedBackground = () => {
       return stars;
     };
     
-    // Create 3 pulsating cosmic nebula circles
+    // Create 3 pulsating cosmic circles
     const createCosmicCircles = () => {
       const circleGroup = new THREE.Group();
       
@@ -170,7 +170,6 @@ const AnimatedBackground = () => {
         const particleCount = 200 + Math.floor(Math.random() * 100);
         const nebulaGeometry = new THREE.BufferGeometry();
         const nebulaPositions = new Float32Array(particleCount * 3);
-        const nebulaSizes = new Float32Array(particleCount);
         
         for (let i = 0; i < particleCount; i++) {
           const angle = (i / particleCount) * Math.PI * 2;
@@ -182,13 +181,9 @@ const AnimatedBackground = () => {
           nebulaPositions[index] = (Math.cos(angle) * (radii[r] + radiusVariation));
           nebulaPositions[index + 1] = (Math.sin(angle) * (radii[r] + radiusVariation));
           nebulaPositions[index + 2] = heightVariation;
-          
-          // Vary particle sizes
-          nebulaSizes[i] = 0.5 + Math.random() * 1.5;
         }
         
         nebulaGeometry.setAttribute('position', new THREE.BufferAttribute(nebulaPositions, 3));
-        nebulaGeometry.setAttribute('size', new THREE.BufferAttribute(nebulaSizes, 1));
         
         // Create a custom nebula texture
         const nebulaCanvas = document.createElement('canvas');
@@ -264,7 +259,7 @@ const AnimatedBackground = () => {
       const pointLights = [];
       for (let i = 0; i < 3; i++) {
         const light = new THREE.PointLight(colors[i], 0.8, 30);
-        light.position.set(...positions[i]);
+        light.position.set(positions[i][0], positions[i][1], positions[i][2]);
         scene.add(light);
         pointLights.push(light);
       }
@@ -281,13 +276,15 @@ const AnimatedBackground = () => {
     let mouseX = 0;
     let mouseY = 0;
     
-    document.addEventListener('mousemove', (event) => {
+    const mouseMoveHandler = (event: MouseEvent) => {
       mouseX = (event.clientX - window.innerWidth / 2) * 0.005;
       mouseY = (event.clientY - window.innerHeight / 2) * 0.005;
-    });
+    };
+    
+    document.addEventListener('mousemove', mouseMoveHandler);
     
     const animate = () => {
-      requestAnimationFrame(animate);
+      const animationId = requestAnimationFrame(animate);
       
       // Animate the cosmic circles
       if (cosmicCircles && cosmicCircles.children) {
@@ -299,12 +296,14 @@ const AnimatedBackground = () => {
             if (child.userData.pulseSpeed) {
               const pulseValue = Math.sin(Date.now() * child.userData.pulseSpeed + child.userData.pulsePhase) * 0.2 + 0.8;
               
-              if (child.material) {
-                if (child.material.opacity !== undefined) {
-                  child.material.opacity = pulseValue * 0.7;
+              if ('material' in child && child.material) {
+                if ((child.material as THREE.Material).opacity !== undefined) {
+                  (child.material as THREE.Material).opacity = pulseValue * 0.7;
                 }
                 
-                if (child.material.size !== undefined && child.geometry.attributes.size) {
+                if ((child.material as THREE.PointsMaterial).size !== undefined && 
+                    'geometry' in child && 
+                    child.geometry.attributes.size) {
                   const sizes = child.geometry.attributes.size;
                   for (let i = 0; i < sizes.count; i++) {
                     sizes.array[i] = (0.5 + Math.random() * 1.5) * pulseValue;
@@ -334,15 +333,36 @@ const AnimatedBackground = () => {
     
     window.addEventListener('resize', handleResize);
     
-    animate();
+    const animationId = requestAnimationFrame(animate);
     
     return () => {
       window.removeEventListener('resize', handleResize);
-      document.removeEventListener('mousemove', () => {});
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      cancelAnimationFrame(animationId);
+      
+      // Properly dispose of THREE.js objects
+      renderer.dispose();
+      
+      // Dispose of geometries and materials
+      if (cosmicCircles) {
+        cosmicCircles.children.forEach(child => {
+          if ('geometry' in child) {
+            child.geometry.dispose();
+          }
+          if ('material' in child) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach(material => material.dispose());
+            } else if (child.material) {
+              (child.material as THREE.Material).dispose();
+            }
+          }
+        });
+      }
+      
+      // Remove renderer from DOM
       if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
         containerRef.current.removeChild(renderer.domElement);
       }
-      scene.dispose();
     };
   }, []);
   
