@@ -172,7 +172,8 @@ const AnimatedBackground = () => {
       
       const sunTexture = new THREE.CanvasTexture(sunCanvas);
       
-      const sunMaterial = new THREE.MeshBasicMaterial({
+      // Use MeshPhongMaterial instead of MeshBasicMaterial for emissive property
+      const sunMaterial = new THREE.MeshPhongMaterial({
         map: sunTexture,
         emissive: new THREE.Color('#ffcc33'),
         emissiveIntensity: 0.8
@@ -207,7 +208,7 @@ const AnimatedBackground = () => {
       
       // Sun rays (lens flare effect)
       const lensFlareTexture = new THREE.TextureLoader().load(
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAkFBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAAD///////////////////////////////////9tKdXjAAAAMHRSTlMAAwUNCBYRJzE5PExVT2JsboCEiJCVmaKmq6+0t7rBxcnM0NTZ3eDj5+rt8fP3+/0sGpIKAAAG1UlEQVR4Ae3dCXaiQBSF4X/U3hCNBkecB+Lces/+t5diG0SqgEJ5wPtyB/At4AlV6Ic/r/V/dbmspTYxzQpF8VhoXodXzDPH8bJGUXxWlDvnmWKazWOhzWCWBMrJnNIXTOLWKDO3xByr+sW6sJ1m2WFwWqKMrJCdQC9YBdYoG6s7gc5YaJSJ1oygK7uEsnAcQUdsUnruyR3UjekGpbZBNKiX14ayWiA6Bqy9EuVEz4MGrD7KZ4KG4A2lU9hoIGeUS9pBQ2Eh5IJmYE0QXnrQkNggLO2hIYpQJh1ocPsIRT9oQEgKxBp8bPNrGpzuEUJtoSXaYXHpGD5meTxCi7vHwpIlPOm7hd+xQ3hYQZONRXmHXAMfszwKaDLpCvNLx9Dml1hYZgc+ZnmE8Inrw0P1+NspuewMPfEZi5qi4YLnvpdPVQvaxuphQdENnsvHLzyXm+ahHRaxlBF6LuMvpnvoeYVv5eg5+2TuOfuRQ89o4xtlBfQ49pdyBD0Dl2WENnq2U39RWuiJHZZQDNCz2vhKcYmeKfzKLNFjB+4flhZ6ltDmddHTcv6w9NDzjBuLKQod9Ki98oeiQ1HYWEgWUYTrOxSahXnvSUJRWLfmG0cXigUW8UxR2JhVHrRhyYvpBygYFnHooPDc59XlCYUNXEAEn3UOdwqDTwOhYUgfr2m4zVN3iyaG8BzTrwefoKK9e0fTQjh2G7dDkDuSBnZDVDZ9N9NWB0sDiY1JTbPgR+LPogzYxsRZDcpYA8J6lKe20FItoNlBMHUUJ0nfjXtMSzCG1iuErBSbqU2J6N9F0AUkDcwDQbvV3IyIYfYEYdswwx2EZVS9zXPwBGHl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'
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAkFBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAAD///////////////////////////////////9tKdXjAAAAMHRSTlMAAwUNCBYRJzE5PExVT2JsboCEiJCVmaKmq6+0t7rBxcnM0NTZ3eDj5+rt8fP3+/0sGpIKAAAG1UlEQVR4Ae3dCXaiQBSF4X/U3hCNBkecB+Lces/+t5diG0SqgEJ5wPtyB/At4AlV6Ic/r/V/dbmspTYxzQpF8VhoXodXzDPH8bJGUXxWlDvnmWKazWOhzWCWBMrJnNIXTOLWKDO3xByr+sW6sJ1m2WFwWqKMrJCdQC9YBdYoG6s7gc5YaJSJ1oygK7uEsnAcQUdsUnruyR3UjekGpbZBNKiX14ayWiA6Bqy9EuVEz4MGrD7KZ4KG4A2lU9hoIGeUS9pBQ2Eh5IJmYE0QXnrQkNggLO2hIYpQJh1ocPsIRT9oQEgKxBp8bPNrGpzuEUJtoSXaYXHpGD5meTxCi7vHwpIlPOm7hd+xQ3hYQZONRXmHXAMfszwKaDLpCvNLx9Dml1hYZgc+ZnmE8Inrw0P1+NspuewMPfEZi5qi4YLnvpdPVQvaxuphQdENnsvHLzyXm+ahHRaxlBG6LuMvpnvoeYVv5eg5+2TuOfuRQ89o4xtlBfQ49pdyBD0Dl2WENnq2U39RWuiJHZZQDNCz2vhK8sPTeImYlh73Z+wDOcXigULRWLfm+kpB2EbjcL+w9NOaJUQwG7PnSQn42vBGIQh1v6KNV9TAL1wvvpv7R3y2YYuErcI5+O1YeTi3DyBL7O8PuvawbhpTv/Wpl/LNBQ8WahHJKKjx5xgc+kxNFMV8Bup+p12SdLLCvFjOYq6+7OJy9O8fXp/qWsGF6jLDXdvf3HI2Yq7N+pNJOCXvyLZGBXKqRp1rRuxLqIMBQr8q1fG+UdqCuqn+hP3tZK0uq4CxPzAVg0MdRpBduhFnDRwzWpfKb6N+CaUGIBg4MrwRiuCJSVsC6XKGkBhJDj4/6Tr8Z6oX73CjJQcGlO/QeTMx1WaXPK1sQ9eUTwW9MfRvZkSZcMmzULk5dN7FiL+0nrLM9XtDL7swhyxTwRYt7mXK7MiZuIQIUBWTUsdS27J5I6F9sIWMVEexEZM3YfgDJ5+5cKBIo+S/qnLzzcLmOBQNu78+mfWp8k4sL0xMmzJDKUXZkHJrPRpMGaSSp0eU/RoK1Q8Vta56Tl3ykK1fNbM5eX6TGOE6LPEXpn69iH6yw4cOSY8Gxa+rrJm8OVhKN2cyWBTZW+ZKmkUkRhD8Af+FtUC8TjqVdKwUXOK/BXl44lJq8u3iWNYFgZaZLKBXtEuSyJiTz96lZrVscrwqGpFDJFPV7L13VmUCyxoHgWSrQH3vYPSqQp7b4x9yJiPXbXn/zW+K5IEpPjkpfz9q6Cn8LHFNsNZklnCdGV38I6Yl4+q5Z5OXJwK1FLFZfEp0KS4T0z97ZnfSfUqZL8jZCHOAKaJZxchb0iMdYxrCfDzLqXJhE5K1SdK07XKQpH2z+cOecUvZUj63Z9iiTOAwHfD/Cw5x3o+aaiqkZDI+gV8W9m3Jtis5HKIZqoL+JJsXoSf5jSuv26iqHzLN9uyJsXxjrPnUdj0TXuLZK6jbWaIAYh1CldGSmEe7bUkRzSHcbW0u+p9Wm8J3Yyv7g9bVHNQN1XXnfGSx6rvQyDZKpM4VmzxXm89g5vCzwwRs9GDNMDfhJ9+gVdEDzZIBbxbGWqRl15S9WFqizW1jtNXbT4Z7IksTxXbL2rY1FW15lB3Iz3LFgCg7xEHJ0ZSkvq9/nzxsHMzEQY5nbYM1DhF0kxgIjf6kxY6bfvT7VcMwl2hBRvkBsvt8UuTY+kOJnU8hQrS3Jky1WzY1l/BVrCVrJEOZMOHE/rTNKz2kqIvqEIswlwkb8YNs5WBmJlvV3bjbGVB2Fx33k4QyL5kl5vYXbIqUl7xoJ51eZzBjrx4y3QnQlwJn9SJM3UgXbvxsqRZaZBa07TLuEcVGtF/qskxTfFxvZNIUsmXeQgykK5dPyLcM+aJi2kj+BH9ZFJsxkS1DtjRt21ixf5NMzCXkaTuxRZjXiJqBhJvQbC/eeJJTCd9p4znUvlPIj9JtlYXCf2HtmUNDPcTJe4p0iUQ/0JTB5gOZKbJ3Ut6g9i+ZM7aMRp/1xjZOkhzFaXZMQUo/gV6RpSXWGpuYjTBa+ZlJuZXsrZTOtG1OWeuuXH8UMbbdFnl6cxn1xU5Bl2lNa0KWZh+Rr5Zq39n+WMZsuMnSVYlW1hZvnKRIfq/UbQ5n7T0YOyTGhEm+rmq53h19dPaP9Ke59P85UzxnlkieAZLuTJa0B0meG6PFD4Ie94Rz7/PdsfAX9k26bRgMjgwAAAAASUVORK5CYII='
       );
       
       const lensFlareSize = 40;
@@ -263,58 +264,55 @@ const AnimatedBackground = () => {
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
       
+      // Define continents data
+      const continentsList = [
+        // North America
+        {
+          points: [
+            [100, 100], [300, 80], [350, 150], [300, 200], [350, 250],
+            [250, 300], [150, 250], [100, 200]
+          ],
+          color: '#2e7d32' // Green
+        },
+        // South America
+        {
+          points: [
+            [300, 300], [350, 400], [300, 450], [250, 400], [270, 300]
+          ],
+          color: '#388e3c' // Slightly different green
+        },
+        // Europe & Africa
+        {
+          points: [
+            [450, 100], [550, 80], [600, 150], [550, 300], [500, 400],
+            [450, 350], [400, 200], [420, 120]
+          ],
+          color: '#4caf50' // Another green
+        },
+        // Asia
+        {
+          points: [
+            [600, 100], [800, 120], [850, 200], [750, 300], [650, 250],
+            [600, 200]
+          ],
+          color: '#8d6e63' // Brown
+        },
+        // Australia
+        {
+          points: [
+            [800, 350], [900, 330], [920, 400], [850, 420], [780, 380]
+          ],
+          color: '#795548' // Dark brown
+        }
+      ];
+      
       if (ctx) {
         // Ocean base color
         ctx.fillStyle = '#0077be';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Draw continents with varying greens and browns
-        const continentColors = ['#2e7d32', '#388e3c', '#4caf50', '#8d6e63', '#795548'];
-        
-        // Continent shapes - simplified for canvas drawing
-        const continents = [
-          // North America
-          {
-            points: [
-              [100, 100], [300, 80], [350, 150], [300, 200], [350, 250],
-              [250, 300], [150, 250], [100, 200]
-            ],
-            color: continentColors[0]
-          },
-          // South America
-          {
-            points: [
-              [300, 300], [350, 400], [300, 450], [250, 400], [270, 300]
-            ],
-            color: continentColors[1]
-          },
-          // Europe & Africa
-          {
-            points: [
-              [450, 100], [550, 80], [600, 150], [550, 300], [500, 400],
-              [450, 350], [400, 200], [420, 120]
-            ],
-            color: continentColors[2]
-          },
-          // Asia
-          {
-            points: [
-              [600, 100], [800, 120], [850, 200], [750, 300], [650, 250],
-              [600, 200]
-            ],
-            color: continentColors[3]
-          },
-          // Australia
-          {
-            points: [
-              [800, 350], [900, 330], [920, 400], [850, 420], [780, 380]
-            ],
-            color: continentColors[4]
-          }
-        ];
-        
         // Draw each continent
-        continents.forEach(continent => {
+        continentsList.forEach(continent => {
           ctx.fillStyle = continent.color;
           ctx.beginPath();
           ctx.moveTo(continent.points[0][0], continent.points[0][1]);
@@ -422,7 +420,7 @@ const AnimatedBackground = () => {
         specularCtx.fillStyle = '#444444';
         specularCtx.fillRect(0, 0, specularCanvas.width, specularCanvas.height);
         
-        continents.forEach(continent => {
+        continentsList.forEach(continent => {
           specularCtx.fillStyle = '#111111'; // Land less reflective
           specularCtx.beginPath();
           specularCtx.moveTo(continent.points[0][0], continent.points[0][1]);
@@ -946,7 +944,7 @@ const AnimatedBackground = () => {
                 
                 if ('material' in child && child.material) {
                   const material = child.material as THREE.Material;
-                  if (material.opacity !== undefined) {
+                  if ('opacity' in material && material.opacity !== undefined) {
                     material.opacity = pulseValue * 0.7;
                   }
                 }
