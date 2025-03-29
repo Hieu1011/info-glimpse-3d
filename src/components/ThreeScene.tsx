@@ -60,9 +60,385 @@ const StarField = ({ count = 2000 }) => {
   );
 };
 
-const Planet = ({ position = [0, 0, 0], color = '#4f86f7', size = 0.5, rotationSpeed = 0.2, orbitRadius = 0, orbitSpeed = 0.2 }: { position?: [number, number, number], color?: string, size?: number, rotationSpeed?: number, orbitRadius?: number, orbitSpeed?: number }) => {
+// Realistic Sun with corona, sunspots, and solar flares
+const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
+  const sunRef = useRef<THREE.Group>(null);
+  const sunMeshRef = useRef<THREE.Mesh>(null);
+  const coronaRef = useRef<THREE.Mesh>(null);
+  const flareRef = useRef<THREE.Mesh>(null);
+  
+  // Create sun texture with sunspots and granulation
+  const sunTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    if (ctx) {
+      // Base sun color (gradient from center)
+      const gradient = ctx.createRadialGradient(
+        256, 256, 0,
+        256, 256, 256
+      );
+      gradient.addColorStop(0, '#fff9e5');
+      gradient.addColorStop(0.5, '#ffee99');
+      gradient.addColorStop(0.8, '#ff7700');
+      gradient.addColorStop(1, '#ff3300');
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 512, 512);
+      
+      // Add granulation texture
+      ctx.globalAlpha = 0.1;
+      for (let i = 0; i < 5000; i++) {
+        const x = Math.random() * 512;
+        const y = Math.random() * 512;
+        const radius = Math.random() * 3 + 1;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = Math.random() > 0.5 ? '#ffffcc' : '#ff5500';
+        ctx.fill();
+      }
+      
+      // Add sunspots
+      ctx.globalAlpha = 0.7;
+      for (let i = 0; i < 8; i++) {
+        const distance = Math.random() * 180;
+        const angle = Math.random() * Math.PI * 2;
+        const x = 256 + Math.cos(angle) * distance;
+        const y = 256 + Math.sin(angle) * distance;
+        const radius = Math.random() * 15 + 5;
+        
+        // Sunspot with darker center and penumbra
+        const spotGradient = ctx.createRadialGradient(
+          x, y, 0,
+          x, y, radius
+        );
+        spotGradient.addColorStop(0, 'rgba(20, 0, 0, 0.8)');
+        spotGradient.addColorStop(0.5, 'rgba(50, 20, 0, 0.7)');
+        spotGradient.addColorStop(1, 'rgba(100, 50, 0, 0.3)');
+        
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = spotGradient;
+        ctx.fill();
+      }
+    }
+    
+    return new THREE.CanvasTexture(canvas);
+  }, []);
+  
+  useFrame((state) => {
+    if (!sunRef.current || !sunMeshRef.current || !coronaRef.current || !flareRef.current) return;
+    
+    const time = state.clock.getElapsedTime();
+    
+    // Rotate the sun
+    sunMeshRef.current.rotation.y = time * 0.1;
+    
+    // Pulsate the corona
+    const pulseFactor = (Math.sin(time * 0.5) * 0.05) + 1;
+    coronaRef.current.scale.set(pulseFactor, pulseFactor, pulseFactor);
+    
+    // Move the flare randomly
+    const flareAngle = time * 0.3;
+    flareRef.current.position.x = Math.cos(flareAngle) * size * 1.1;
+    flareRef.current.position.y = Math.sin(flareAngle) * size * 1.1;
+  });
+  
+  return (
+    <group ref={sunRef} position={position}>
+      {/* Main sun sphere */}
+      <mesh ref={sunMeshRef}>
+        <sphereGeometry args={[size, 64, 64]} />
+        <meshBasicMaterial 
+          map={sunTexture}
+          emissive={new THREE.Color(0xffcc33)}
+          emissiveIntensity={1.2}
+        />
+      </mesh>
+      
+      {/* Corona effect */}
+      <mesh ref={coronaRef}>
+        <sphereGeometry args={[size * 1.3, 32, 32]} />
+        <meshBasicMaterial 
+          color={0xffdd44}
+          transparent={true}
+          opacity={0.2}
+          side={THREE.BackSide}
+        />
+      </mesh>
+      
+      {/* Outer glow */}
+      <mesh>
+        <sphereGeometry args={[size * 1.8, 32, 32]} />
+        <meshBasicMaterial 
+          color={0xffee77}
+          transparent={true}
+          opacity={0.1}
+          side={THREE.BackSide}
+        />
+      </mesh>
+      
+      {/* Solar flare */}
+      <mesh ref={flareRef} position={[size * 1.1, 0, 0]}>
+        <sphereGeometry args={[size * 0.15, 16, 16]} />
+        <meshBasicMaterial 
+          color={0xffffaa}
+          transparent={true}
+          opacity={0.7}
+        />
+      </mesh>
+    </group>
+  );
+};
+
+// Realistic Moon with craters, mare, and terrain details
+const Moon = ({ position = [0, 0, 0], size = 0.3, orbitRadius = 3.5, orbitSpeed = 0.2 }) => {
+  const moonRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  
+  // Create detailed moon texture and bump map
+  const [moonTexture, moonBumpMap] = useMemo(() => {
+    // Base texture canvas
+    const textureCanvas = document.createElement('canvas');
+    textureCanvas.width = 1024;
+    textureCanvas.height = 1024;
+    const texCtx = textureCanvas.getContext('2d');
+    
+    // Bump map canvas for crater details
+    const bumpCanvas = document.createElement('canvas');
+    bumpCanvas.width = 1024;
+    bumpCanvas.height = 1024;
+    const bumpCtx = bumpCanvas.getContext('2d');
+    
+    if (texCtx && bumpCtx) {
+      // Fill base lunar color
+      texCtx.fillStyle = '#aaa9ad';
+      texCtx.fillRect(0, 0, 1024, 1024);
+      
+      bumpCtx.fillStyle = '#555555';
+      bumpCtx.fillRect(0, 0, 1024, 1024);
+      
+      // Add maria (dark patches)
+      const mariaLocations = [
+        {x: 300, y: 400, radius: 200},
+        {x: 600, y: 300, radius: 180},
+        {x: 400, y: 700, radius: 150},
+        {x: 800, y: 600, radius: 100},
+      ];
+      
+      mariaLocations.forEach(maria => {
+        // Draw maria on texture
+        texCtx.fillStyle = '#3a3a45';
+        texCtx.beginPath();
+        texCtx.arc(maria.x, maria.y, maria.radius, 0, Math.PI * 2);
+        texCtx.fill();
+        
+        // Draw maria on bump map (slightly lower terrain)
+        bumpCtx.fillStyle = '#333333';
+        bumpCtx.beginPath();
+        bumpCtx.arc(maria.x, maria.y, maria.radius, 0, Math.PI * 2);
+        bumpCtx.fill();
+      });
+      
+      // Add craters to texture and bump map
+      for (let i = 0; i < 300; i++) {
+        const x = Math.random() * 1024;
+        const y = Math.random() * 1024;
+        const radius = Math.random() * 30 + 5;
+        
+        // Crater on texture
+        const gradient = texCtx.createRadialGradient(
+          x, y, 0,
+          x, y, radius
+        );
+        gradient.addColorStop(0, '#808080');
+        gradient.addColorStop(0.2, '#757575');
+        gradient.addColorStop(0.7, '#656565');
+        gradient.addColorStop(1, '#9a9a9a');
+        
+        texCtx.beginPath();
+        texCtx.arc(x, y, radius, 0, Math.PI * 2);
+        texCtx.fillStyle = gradient;
+        texCtx.fill();
+        
+        // Crater on bump map (height information)
+        const bumpGradient = bumpCtx.createRadialGradient(
+          x, y, 0,
+          x, y, radius
+        );
+        bumpGradient.addColorStop(0, '#111111');  // Deep center
+        bumpGradient.addColorStop(0.2, '#333333');
+        bumpGradient.addColorStop(0.7, '#777777'); // Raised rim
+        bumpGradient.addColorStop(1, '#555555');
+        
+        bumpCtx.beginPath();
+        bumpCtx.arc(x, y, radius, 0, Math.PI * 2);
+        bumpCtx.fillStyle = bumpGradient;
+        bumpCtx.fill();
+      }
+      
+      // Add smaller detail texture
+      for (let i = 0; i < 5000; i++) {
+        const x = Math.random() * 1024;
+        const y = Math.random() * 1024;
+        const radius = Math.random() * 2 + 0.5;
+        
+        const brightness = Math.random() * 30 - 15;
+        
+        // Texture detail
+        texCtx.beginPath();
+        texCtx.arc(x, y, radius, 0, Math.PI * 2);
+        texCtx.fillStyle = `rgb(${120 + brightness}, ${120 + brightness}, ${120 + brightness})`;
+        texCtx.fill();
+        
+        // Bump detail
+        bumpCtx.beginPath();
+        bumpCtx.arc(x, y, radius, 0, Math.PI * 2);
+        bumpCtx.fillStyle = Math.random() > 0.5 ? '#666666' : '#444444';
+        bumpCtx.fill();
+      }
+    }
+    
+    return [
+      new THREE.CanvasTexture(textureCanvas),
+      new THREE.CanvasTexture(bumpCanvas)
+    ];
+  }, []);
+
+  useFrame(({ clock }) => {
+    if (!moonRef.current || !groupRef.current) return;
+    const t = clock.getElapsedTime();
+    
+    // Self rotation
+    moonRef.current.rotation.y += 0.003;
+    
+    // Orbit around center point
+    groupRef.current.rotation.y = t * orbitSpeed;
+  });
+
+  return (
+    <group ref={groupRef}>
+      <mesh 
+        ref={moonRef} 
+        position={[orbitRadius, position[1], position[2]]}
+      >
+        <sphereGeometry args={[size, 64, 64]} />
+        <meshStandardMaterial 
+          map={moonTexture}
+          bumpMap={moonBumpMap}
+          bumpScale={0.02}
+          roughness={0.9} 
+          metalness={0.0}
+        />
+      </mesh>
+    </group>
+  );
+};
+
+// Small rocky planet with terrain details
+const RockyPlanet = ({ position = [0, 0, 0], color = '#3366ff', size = 0.2, rotationSpeed = 0.5, orbitRadius = 2, orbitSpeed = 0.3 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
+  
+  // Create planet texture with terrain details
+  const [planetTexture, planetBumpMap] = useMemo(() => {
+    const textureCanvas = document.createElement('canvas');
+    textureCanvas.width = 512;
+    textureCanvas.height = 512;
+    const texCtx = textureCanvas.getContext('2d');
+    
+    const bumpCanvas = document.createElement('canvas');
+    bumpCanvas.width = 512;
+    bumpCanvas.height = 512;
+    const bumpCtx = bumpCanvas.getContext('2d');
+    
+    if (texCtx && bumpCtx) {
+      // Base color - convert hex to rgb for manipulation
+      const baseColor = new THREE.Color(color);
+      
+      texCtx.fillStyle = color;
+      texCtx.fillRect(0, 0, 512, 512);
+      
+      bumpCtx.fillStyle = '#555555';
+      bumpCtx.fillRect(0, 0, 512, 512);
+      
+      // Create terrain patterns
+      for (let y = 0; y < 512; y += 4) {
+        for (let x = 0; x < 512; x += 4) {
+          const noise = Math.random() * 0.2 - 0.1;
+          
+          const r = Math.floor(baseColor.r * 255 * (1 + noise));
+          const g = Math.floor(baseColor.g * 255 * (1 + noise));
+          const b = Math.floor(baseColor.b * 255 * (1 + noise));
+          
+          texCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          texCtx.fillRect(x, y, 4, 4);
+          
+          bumpCtx.fillStyle = `rgb(${128 + noise * 100}, ${128 + noise * 100}, ${128 + noise * 100})`;
+          bumpCtx.fillRect(x, y, 4, 4);
+        }
+      }
+      
+      // Add terrain features like mountains and valleys
+      for (let i = 0; i < 20; i++) {
+        const centerX = Math.random() * 512;
+        const centerY = Math.random() * 512;
+        const radius = Math.random() * 70 + 30;
+        
+        // Feature on texture
+        const gradient = texCtx.createRadialGradient(
+          centerX, centerY, 0,
+          centerX, centerY, radius
+        );
+        
+        const featureType = Math.random();
+        if (featureType > 0.7) {
+          // Darker region - crater or valley
+          gradient.addColorStop(0, `rgba(${baseColor.r * 150}, ${baseColor.g * 150}, ${baseColor.b * 180}, 0.7)`);
+          gradient.addColorStop(1, `rgba(${baseColor.r * 255}, ${baseColor.g * 255}, ${baseColor.b * 255}, 0)`);
+        } else {
+          // Lighter region - mountain or highland
+          gradient.addColorStop(0, `rgba(${Math.min(255, baseColor.r * 300)}, ${Math.min(255, baseColor.g * 300)}, ${Math.min(255, baseColor.b * 300)}, 0.7)`);
+          gradient.addColorStop(1, `rgba(${baseColor.r * 255}, ${baseColor.g * 255}, ${baseColor.b * 255}, 0)`);
+        }
+        
+        texCtx.beginPath();
+        texCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        texCtx.fillStyle = gradient;
+        texCtx.fill();
+        
+        // Feature on bump map
+        const bumpGradient = bumpCtx.createRadialGradient(
+          centerX, centerY, 0,
+          centerX, centerY, radius
+        );
+        
+        if (featureType > 0.7) {
+          // Depression
+          bumpGradient.addColorStop(0, 'rgba(30, 30, 30, 0.8)');
+          bumpGradient.addColorStop(0.7, 'rgba(100, 100, 100, 0.5)');
+          bumpGradient.addColorStop(1, 'rgba(128, 128, 128, 0)');
+        } else {
+          // Elevation
+          bumpGradient.addColorStop(0, 'rgba(200, 200, 200, 0.8)');
+          bumpGradient.addColorStop(0.7, 'rgba(150, 150, 150, 0.5)');
+          bumpGradient.addColorStop(1, 'rgba(128, 128, 128, 0)');
+        }
+        
+        bumpCtx.beginPath();
+        bumpCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        bumpCtx.fillStyle = bumpGradient;
+        bumpCtx.fill();
+      }
+    }
+    
+    return [
+      new THREE.CanvasTexture(textureCanvas),
+      new THREE.CanvasTexture(bumpCanvas)
+    ];
+  }, [color]);
 
   useFrame(({ clock }) => {
     if (!meshRef.current || !groupRef.current) return;
@@ -72,9 +448,7 @@ const Planet = ({ position = [0, 0, 0], color = '#4f86f7', size = 0.5, rotationS
     meshRef.current.rotation.y += rotationSpeed * 0.01;
     
     // Orbit around center point
-    if (orbitRadius > 0) {
-      groupRef.current.rotation.y = t * orbitSpeed;
-    }
+    groupRef.current.rotation.y = t * orbitSpeed;
   });
 
   return (
@@ -85,11 +459,11 @@ const Planet = ({ position = [0, 0, 0], color = '#4f86f7', size = 0.5, rotationS
       >
         <sphereGeometry args={[size, 32, 32]} />
         <meshStandardMaterial 
-          color={color} 
-          roughness={0.4} 
-          metalness={0.3} 
-          emissive={color}
-          emissiveIntensity={0.1}
+          map={planetTexture}
+          bumpMap={planetBumpMap}
+          bumpScale={0.005}
+          roughness={0.8} 
+          metalness={0.2}
         />
       </mesh>
     </group>
@@ -197,10 +571,10 @@ export const ThreeScene = () => {
         
         <StarField count={3000} />
         
-        {/* Solar system */}
-        <Planet color="#ffcc33" size={0.8} position={[0, 0, 0]} rotationSpeed={0.1} />
-        <Planet color="#3366ff" size={0.2} position={[0, 0, 0]} rotationSpeed={0.5} orbitRadius={2} orbitSpeed={0.3} />
-        <Planet color="#ff5566" size={0.3} position={[0, 0, 0]} rotationSpeed={0.3} orbitRadius={3.5} orbitSpeed={0.2} />
+        {/* Solar system with realistic celestial bodies */}
+        <Sun position={[0, 0, 0]} size={0.8} />
+        <RockyPlanet color="#3366ff" size={0.2} position={[0, 0, 0]} rotationSpeed={0.5} orbitRadius={2} orbitSpeed={0.3} />
+        <Moon position={[0, 0, 0]} size={0.3} orbitRadius={3.5} orbitSpeed={0.2} />
         
         {/* Distant galaxy */}
         <Galaxy position={[-10, 3, -15]} radius={3} count={500} thickness={0.3} spin={1.2} />
