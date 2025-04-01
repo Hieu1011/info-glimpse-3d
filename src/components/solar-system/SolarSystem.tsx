@@ -17,9 +17,6 @@ const SolarSystem = () => {
     // Create scene, camera, renderer, and controls
     const { scene, camera, renderer, controls } = useSceneSetup(containerRef);
     
-    // Set black background
-    scene.background = new THREE.Color(0x000000);
-    
     // Create starfield background
     const starField = useStarField(scene);
     
@@ -51,6 +48,7 @@ const SolarSystem = () => {
       earth,
       moonOrbitGroup,
       moon,
+      earthOrbitGroup,
       asteroidBelt,
       containerRef
     });
@@ -58,7 +56,7 @@ const SolarSystem = () => {
     return cleanupFn;
   }, [isInitialized]);
   
-  return <div ref={containerRef} className="absolute inset-0 bg-black" />;
+  return <div ref={containerRef} className="absolute inset-0 bg-[#050520]" />;
 };
 
 export default SolarSystem;

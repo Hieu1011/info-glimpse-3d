@@ -13,6 +13,7 @@ type AnimationProps = {
   earth: THREE.Mesh;
   moonOrbitGroup: THREE.Group;
   moon: THREE.Mesh;
+  earthOrbitGroup: THREE.Group;
   asteroidBelt: THREE.Group;
   containerRef: MutableRefObject<HTMLDivElement | null>;
 };
@@ -27,6 +28,7 @@ export function useAnimation({
   earth,
   moonOrbitGroup,
   moon,
+  earthOrbitGroup,
   asteroidBelt,
   containerRef
 }: AnimationProps) {
@@ -56,9 +58,10 @@ export function useAnimation({
       }
     });
     
-    // Special handling for Earth-Moon system (more realistic)
+    // Special handling for Earth system
+    earthOrbitGroup.rotation.y += 0.005; // Earth orbiting sun
     earth.rotation.y += 0.01; // Earth rotation
-    moonOrbitGroup.rotation.y += 0.007; // Moon orbiting Earth
+    moonOrbitGroup.rotation.y += 0.03; // Moon orbiting Earth - faster rotation
     moon.rotation.y += 0.001; // Moon self-rotation - always shows same face to Earth
     
     // Animate asteroid belt

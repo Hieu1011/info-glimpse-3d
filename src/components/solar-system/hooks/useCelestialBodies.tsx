@@ -18,7 +18,7 @@ export function useCelestialBodies(scene: THREE.Scene) {
   // Create the sun
   const sun = createSun();
   
-  // Create textures for planets - scientific accurate colors
+  // Create textures for planets with scientifically accurate colors
   const mercuryTexture = createPlanetTexture('#ada8a5', true); // Grayish
   const venusTexture = createPlanetTexture('#e89b55'); // Yellow-orange
   const earthTexture = createEarthTexture();
@@ -29,28 +29,35 @@ export function useCelestialBodies(scene: THREE.Scene) {
   const uranusTexture = createPlanetTexture('#b1e3e3'); // Pale cyan
   const neptuneTexture = createPlanetTexture('#3f54ba'); // Deep blue
   
-  // Create the planets with accurate relative sizes and distances 
+  // Create the planets with more accurate relative sizes and distances 
   // (using scaled values for better visualization)
-  // Real values are too extreme to visualize well
+  
   // Mercury (size, texture, distance from sun, rotation speed, orbit speed, axial tilt)
-  const mercury = createPlanet(0.38, mercuryTexture, 5.8, 0.01, 0.47, 0.03);
+  const mercury = createPlanet(0.38, mercuryTexture, 4.8, 0.01, 0.47, 0.03);
+  
   // Venus
-  const venus = createPlanet(0.95, venusTexture, 7.2, 0.004, 0.35, 177);
+  const venus = createPlanet(0.95, venusTexture, 6.0, 0.004, 0.35, 177);
+  
   // Earth with Moon
-  const { earthOrbitGroup, earth, moonOrbitGroup, moon } = createEarthWithMoon(10, earthTexture, moonTexture);
+  const { earthOrbitGroup, earth, moonOrbitGroup, moon } = createEarthWithMoon(7.5, earthTexture, moonTexture);
+  
   // Mars
-  const mars = createPlanet(0.53, marsTexture, 13, 0.9, 0.24, 25);
+  const mars = createPlanet(0.53, marsTexture, 9.0, 0.9, 0.24, 25);
+  
   // Jupiter
-  const jupiter = createPlanet(2.5, jupiterTexture, 18, 2.0, 0.13, 3.1);
+  const jupiter = createPlanet(2.5, jupiterTexture, 13.0, 2.0, 0.13, 3.1);
+  
   // Saturn with rings
-  const saturn = createPlanet(2.2, saturnTexture, 25, 1.7, 0.09, 26.7, true);
+  const saturn = createPlanet(2.2, saturnTexture, 17.0, 1.7, 0.09, 26.7, true);
+  
   // Uranus
-  const uranus = createPlanet(1.8, uranusTexture, 32, 1.4, 0.07, 97.8, false);
+  const uranus = createPlanet(1.8, uranusTexture, 21.0, 1.4, 0.07, 97.8, false);
+  
   // Neptune
-  const neptune = createPlanet(1.8, neptuneTexture, 39, 1.5, 0.05, 28.3);
+  const neptune = createPlanet(1.8, neptuneTexture, 25.0, 1.5, 0.05, 28.3);
   
   // Create asteroid belt between Mars and Jupiter
-  const asteroidBelt = useAsteroidBelt(scene, 15, 17, 200);
+  const asteroidBelt = useAsteroidBelt(scene, 10.5, 12.0, 200);
   
   return { 
     sun, 
