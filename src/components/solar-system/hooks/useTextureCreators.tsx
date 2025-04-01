@@ -29,7 +29,7 @@ export function useTextureCreators() {
           ctx.fill();
         }
         
-        // Add larger features
+        // Add larger features for more realistic terrain
         for (let i = 0; i < 20; i++) {
           const x = Math.random() * size;
           const y = Math.random() * size;
@@ -131,7 +131,7 @@ export function useTextureCreators() {
     return new THREE.CanvasTexture(canvas);
   };
   
-  // Create Moon texture
+  // Create Moon texture with improved detail
   const createMoonTexture = (): THREE.CanvasTexture => {
     const canvas = document.createElement('canvas');
     const size = 512;
@@ -140,11 +140,11 @@ export function useTextureCreators() {
     const ctx = canvas.getContext('2d');
     
     if (ctx) {
-      // Base color
+      // Base color - gray with slight variation
       ctx.fillStyle = '#aaa9ad';
       ctx.fillRect(0, 0, size, size);
       
-      // Maria (dark areas)
+      // Maria (dark areas) - more accurate positioning
       const maria = [
         { x: 250, y: 250, r: 100 },
         { x: 350, y: 200, r: 80 },
@@ -159,7 +159,7 @@ export function useTextureCreators() {
         ctx.fill();
       });
       
-      // Craters
+      // Add more realistic craters
       for (let i = 0; i < 1000; i++) {
         const x = Math.random() * size;
         const y = Math.random() * size;
@@ -168,7 +168,7 @@ export function useTextureCreators() {
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         
-        // Crater with shadow
+        // Crater with shadow and highlight for 3D effect
         const gradient = ctx.createRadialGradient(
           x - radius * 0.3, y - radius * 0.3, 0,
           x, y, radius

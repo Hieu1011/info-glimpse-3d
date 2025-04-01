@@ -35,6 +35,8 @@ const SolarSystem = () => {
       mars, 
       jupiter, 
       saturn,
+      uranus,
+      neptune,
       asteroidBelt 
     } = useCelestialBodies(scene);
     
@@ -45,7 +47,7 @@ const SolarSystem = () => {
       renderer,
       controls,
       sun,
-      planets: [mercury, venus, mars, jupiter, saturn],
+      planets: [mercury, venus, mars, jupiter, saturn, uranus, neptune],
       earth,
       moonOrbitGroup,
       moon,

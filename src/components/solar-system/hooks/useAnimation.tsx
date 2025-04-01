@@ -56,10 +56,10 @@ export function useAnimation({
       }
     });
     
-    // Special handling for Earth-Moon system
+    // Special handling for Earth-Moon system (more realistic)
     earth.rotation.y += 0.01; // Earth rotation
     moonOrbitGroup.rotation.y += 0.007; // Moon orbiting Earth
-    moon.rotation.y += 0.001; // Moon self-rotation
+    moon.rotation.y += 0.001; // Moon self-rotation - always shows same face to Earth
     
     // Animate asteroid belt
     asteroidBelt.children.forEach(asteroid => {

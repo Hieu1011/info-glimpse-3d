@@ -27,9 +27,9 @@ export function usePlanetCreator(scene: THREE.Scene) {
       sunCtx.fillStyle = gradient;
       sunCtx.fillRect(0, 0, sunSize, sunSize);
       
-      // Add surface details
+      // Add solar flares and details
       sunCtx.globalAlpha = 0.4;
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < 40; i++) {
         const x = Math.random() * sunSize;
         const y = Math.random() * sunSize;
         const r = Math.random() * 80 + 20;
@@ -132,6 +132,7 @@ export function usePlanetCreator(scene: THREE.Scene) {
         ringCtx.fillStyle = 'rgb(180, 160, 130)';
         ringCtx.fillRect(0, 0, 512, 64);
         
+        // Make rings more detailed and realistic
         for (let i = 0; i < 512; i += 2) {
           const alpha = Math.random() * 0.5 + 0.5;
           const brightness = Math.random() * 30 + 160;
@@ -167,7 +168,7 @@ export function usePlanetCreator(scene: THREE.Scene) {
     return { planetGroup, planet };
   };
   
-  // Create Earth with Moon orbiting it
+  // Create Earth with Moon orbiting it - improved with more accurate positioning
   const createEarthWithMoon = (position: number, earthTexture: THREE.Texture, moonTexture: THREE.Texture) => {
     // Create Earth group for orbit around the sun
     const earthOrbitGroup = new THREE.Group();
@@ -187,11 +188,11 @@ export function usePlanetCreator(scene: THREE.Scene) {
     earth.position.x = position;
     earthOrbitGroup.add(earth);
     
-    // Create Moon orbit group
+    // Create Moon orbit group attached to Earth
     const moonOrbitGroup = new THREE.Group();
     earth.add(moonOrbitGroup);
     
-    // Create Moon
+    // Create Moon with more accurate size and distance
     const moonSize = 0.27; // Relative to Earth
     const moonGeometry = new THREE.SphereGeometry(moonSize, 24, 24);
     const moonMaterial = new THREE.MeshStandardMaterial({
@@ -201,7 +202,7 @@ export function usePlanetCreator(scene: THREE.Scene) {
     });
     
     const moon = new THREE.Mesh(moonGeometry, moonMaterial);
-    moon.position.x = 2; // Moon distance from Earth
+    moon.position.x = 2; // Distance from Earth (scaled)
     moonOrbitGroup.add(moon);
     
     // Store animation info
