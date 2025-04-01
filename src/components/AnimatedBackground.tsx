@@ -515,7 +515,7 @@ const AnimatedBackground = () => {
         const asteroidGeometry = new THREE.DodecahedronGeometry(size, 0);
         // Distort the geometry
         if (asteroidGeometry.attributes.position) {
-          const positions = asteroidGeometry.attributes.position;
+          const positions = asteroidGeometry.attributes.position as THREE.BufferAttribute;
           const vertexCount = positions.count;
           
           for (let j = 0; j < vertexCount; j++) {
@@ -602,14 +602,18 @@ const AnimatedBackground = () => {
       sun.rotation.y += 0.001;
       
       // Animate planets (rotation and orbit)
-      [mercury, venus, earthOrbitGroup, mars, jupiter, saturn].forEach(({ planetGroup, planet }) => {
-        if (planetGroup && planetGroup.userData) {
+      const planets = [mercury, venus, mars, jupiter, saturn];
+      planets.forEach((planetObj) => {
+        if (planetObj && 'planetGroup' in planetObj && 'planet' in planetObj) {
+          const { planetGroup, planet } = planetObj;
           // Update orbit around the sun
-          planetGroup.rotation.y += planetGroup.userData.orbitSpeed * 0.005;
+          if (planetGroup && planetGroup.userData) {
+            planetGroup.rotation.y += planetGroup.userData.orbitSpeed * 0.005;
           
-          // Update planet self-rotation
-          if (planet) {
-            planet.rotation.y += planet.userData.rotationSpeed * 0.01;
+            // Update planet self-rotation
+            if (planet) {
+              planet.rotation.y += planet.userData.rotationSpeed * 0.01;
+            }
           }
         }
       });
@@ -660,15 +664,17 @@ const AnimatedBackground = () => {
       
       // Dispose of geometries and materials
       scene.traverse((object) => {
-        if ('geometry' in object) {
-          object.geometry.dispose();
-        }
-        
-        if ('material' in object) {
-          if (Array.isArray(object.material)) {
-            object.material.forEach(material => material.dispose());
-          } else if (object.material) {
-            (object.material as THREE.Material).dispose();
+        if (object instanceof THREE.Mesh) {
+          if (object.geometry) {
+            object.geometry.dispose();
+          }
+          
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach(material => material.dispose());
+            } else {
+              object.material.dispose();
+            }
           }
         }
       });
