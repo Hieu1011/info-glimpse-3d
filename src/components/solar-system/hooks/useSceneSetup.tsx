@@ -6,6 +6,7 @@ import { MutableRefObject } from 'react';
 export function useSceneSetup(containerRef: MutableRefObject<HTMLDivElement | null>) {
   // Create scene
   const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
   
   // Create camera with better angle
   const camera = new THREE.PerspectiveCamera(
@@ -18,9 +19,13 @@ export function useSceneSetup(containerRef: MutableRefObject<HTMLDivElement | nu
   camera.position.set(30, 15, 30);
   
   // Create renderer
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  const renderer = new THREE.WebGLRenderer({ 
+    alpha: true, 
+    antialias: true 
+  });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 1);
   renderer.shadowMap.enabled = true;
   if (containerRef.current) {
     containerRef.current.appendChild(renderer.domElement);

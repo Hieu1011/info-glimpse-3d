@@ -1,10 +1,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { useCelestialBodies } from './hooks/useCelestialBodies';
 import { useStarField } from './hooks/useStarField';
 import { useSceneSetup } from './hooks/useSceneSetup';
+import { useCelestialBodies } from './hooks/useCelestialBodies';
 import { useAnimation } from './hooks/useAnimation';
 
 const SolarSystem = () => {
@@ -17,6 +16,9 @@ const SolarSystem = () => {
     
     // Create scene, camera, renderer, and controls
     const { scene, camera, renderer, controls } = useSceneSetup(containerRef);
+    
+    // Set black background
+    scene.background = new THREE.Color(0x000000);
     
     // Create starfield background
     const starField = useStarField(scene);
@@ -54,7 +56,7 @@ const SolarSystem = () => {
     return cleanupFn;
   }, [isInitialized]);
   
-  return <div ref={containerRef} className="absolute inset-0" />;
+  return <div ref={containerRef} className="absolute inset-0 bg-black" />;
 };
 
 export default SolarSystem;
