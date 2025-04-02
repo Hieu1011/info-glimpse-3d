@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import ThreeScene from '@/components/ThreeScene';
 import NavBar from '@/components/NavBar';
 import ProfileSection from '@/components/ProfileSection';
 import SkillsSection from '@/components/SkillsSection';
@@ -31,6 +32,7 @@ const Index = () => {
       ) : (
         <>
           <div className="fixed inset-0 z-0 pointer-events-none">
+            <ThreeScene />
             <AnimatedBackground />
           </div>
           
