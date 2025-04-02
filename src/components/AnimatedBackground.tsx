@@ -129,6 +129,173 @@ const AnimatedBackground = () => {
       return stars;
     };
     
+    // Create realistic planets in our solar system
+    const createSolarSystem = () => {
+      const solarSystem = new THREE.Group();
+      
+      // Sun 
+      const sunGeometry = new THREE.SphereGeometry(5, 64, 64);
+      const sunTexture = createPlanetTexture('#ffdd66', 512, true);
+      const sunMaterial = new THREE.MeshBasicMaterial({ 
+        map: sunTexture,
+        emissive: new THREE.Color(0xffdd66),
+        emissiveIntensity: 1
+      });
+      const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+      solarSystem.add(sun);
+      
+      // Helper function to create planet texture
+      function createPlanetTexture(baseColor, size, isSun = false) {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return new THREE.Texture();
+        
+        // Fill with base color
+        ctx.fillStyle = baseColor;
+        ctx.fillRect(0, 0, size, size);
+        
+        if (isSun) {
+          // Add solar flares and spots for sun
+          for (let i = 0; i < 20; i++) {
+            const x = Math.random() * size;
+            const y = Math.random() * size;
+            const radius = Math.random() * 30 + 10;
+            
+            const gradient = ctx.createRadialGradient(
+              x, y, 0,
+              x, y, radius
+            );
+            
+            if (Math.random() > 0.7) {
+              // Sunspot
+              gradient.addColorStop(0, 'rgba(100, 60, 0, 0.8)');
+              gradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
+            } else {
+              // Solar flare
+              gradient.addColorStop(0, 'rgba(255, 255, 200, 0.8)');
+              gradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
+            }
+            
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+          }
+        } else {
+          // Add terrain features for planets
+          for (let i = 0; i < 100; i++) {
+            const x = Math.random() * size;
+            const y = Math.random() * size;
+            const radius = Math.random() * 20 + 5;
+            
+            const color = ctx.fillStyle;
+            const r = parseInt(color.toString().substr(1, 2), 16);
+            const g = parseInt(color.toString().substr(3, 2), 16);
+            const b = parseInt(color.toString().substr(5, 2), 16);
+            
+            const variation = Math.random() * 30 - 15;
+            ctx.fillStyle = `rgb(${r + variation}, ${g + variation}, ${b + variation})`;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+      }
+      
+      // Planet data: [size, distance, color, rotationSpeed, orbitSpeed]
+      const planetData = [
+        [0.4, 10, '#a6a6a6', 0.02, 0.08], // Mercury
+        [0.8, 15, '#e6c686', 0.015, 0.07], // Venus
+        [1.0, 20, '#6b93d6', 0.01, 0.06],  // Earth
+        [0.6, 25, '#c1440e', 0.012, 0.05], // Mars
+        [2.5, 35, '#e0ae6f', 0.005, 0.04], // Jupiter
+        [2.2, 45, '#d2b487', 0.006, 0.03], // Saturn
+        [1.8, 55, '#91aeca', 0.007, 0.02], // Uranus
+        [1.7, 65, '#5b76a9', 0.008, 0.01]  // Neptune
+      ];
+      
+      const planets = [];
+      
+      // Create planets
+      for (let i = 0; i < planetData.length; i++) {
+        const [size, distance, color, rotationSpeed, orbitSpeed] = planetData[i];
+        
+        // Planet orbit
+        const orbit = new THREE.Group();
+        solarSystem.add(orbit);
+        
+        // Planet
+        const planetGeometry = new THREE.SphereGeometry(size, 32, 32);
+        const planetTexture = createPlanetTexture(color, 256);
+        const planetMaterial = new THREE.MeshStandardMaterial({ 
+          map: planetTexture,
+          roughness: 0.7,
+          metalness: 0.1
+        });
+        
+        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+        planet.position.x = distance;
+        orbit.add(planet);
+        
+        // Add rings to Saturn
+        if (i === 5) { // Saturn
+          const ringGeometry = new THREE.RingGeometry(size * 1.4, size * 2.2, 64);
+          const ringMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xd2b487,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.7
+          });
+          const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+          ring.rotation.x = Math.PI / 2;
+          planet.add(ring);
+        }
+        
+        // Store data for animation
+        planets.push({
+          planet,
+          orbit,
+          rotationSpeed,
+          orbitSpeed
+        });
+        
+        // Add moon to Earth
+        if (i === 2) { // Earth
+          const moonOrbit = new THREE.Group();
+          planet.add(moonOrbit);
+          
+          const moonGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+          const moonTexture = createPlanetTexture('#cccccc', 128);
+          const moonMaterial = new THREE.MeshStandardMaterial({ 
+            map: moonTexture,
+            roughness: 0.8,
+            metalness: 0.1
+          });
+          
+          const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+          moon.position.x = 2;
+          moonOrbit.add(moon);
+          
+          // Store moon data for animation
+          planets.push({
+            planet: moon,
+            orbit: moonOrbit,
+            rotationSpeed: 0.02,
+            orbitSpeed: 0.1
+          });
+        }
+      }
+      
+      scene.add(solarSystem);
+      return planets;
+    };
+    
     // Create 3 pulsating cosmic circles
     const createCosmicCircles = () => {
       const circleGroup = new THREE.Group();
@@ -269,6 +436,7 @@ const AnimatedBackground = () => {
     
     // Create all objects
     const starField = createStarField();
+    const planets = createSolarSystem();
     const cosmicCircles = createCosmicCircles();
     const lights = createLights();
     
@@ -285,6 +453,13 @@ const AnimatedBackground = () => {
     
     const animate = () => {
       const animationId = requestAnimationFrame(animate);
+      const time = Date.now() * 0.001;
+      
+      // Animate the planets
+      planets.forEach(({ planet, orbit, rotationSpeed, orbitSpeed }) => {
+        planet.rotation.y += rotationSpeed;
+        orbit.rotation.y += orbitSpeed * 0.005;
+      });
       
       // Animate the cosmic circles
       if (cosmicCircles && cosmicCircles.children) {
@@ -296,20 +471,8 @@ const AnimatedBackground = () => {
             if (child.userData.pulseSpeed) {
               const pulseValue = Math.sin(Date.now() * child.userData.pulseSpeed + child.userData.pulsePhase) * 0.2 + 0.8;
               
-              if ('material' in child && child.material) {
-                if ((child.material as THREE.Material).opacity !== undefined) {
-                  (child.material as THREE.Material).opacity = pulseValue * 0.7;
-                }
-                
-                if ((child.material as THREE.PointsMaterial).size !== undefined && 
-                    'geometry' in child && 
-                    child.geometry.attributes.size) {
-                  const sizes = child.geometry.attributes.size;
-                  for (let i = 0; i < sizes.count; i++) {
-                    sizes.array[i] = (0.5 + Math.random() * 1.5) * pulseValue;
-                  }
-                  sizes.needsUpdate = true;
-                }
+              if ('material' in child && child.material instanceof THREE.Material) {
+                child.material.opacity = pulseValue * 0.7;
               }
             }
           }
@@ -346,14 +509,14 @@ const AnimatedBackground = () => {
       // Dispose of geometries and materials
       if (cosmicCircles) {
         cosmicCircles.children.forEach(child => {
-          if ('geometry' in child) {
+          if ('geometry' in child && child.geometry instanceof THREE.BufferGeometry) {
             child.geometry.dispose();
           }
-          if ('material' in child) {
+          if ('material' in child && child.material instanceof THREE.Material) {
             if (Array.isArray(child.material)) {
               child.material.forEach(material => material.dispose());
-            } else if (child.material) {
-              (child.material as THREE.Material).dispose();
+            } else {
+              child.material.dispose();
             }
           }
         });
