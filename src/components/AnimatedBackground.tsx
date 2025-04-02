@@ -138,14 +138,26 @@ const AnimatedBackground = () => {
       const sunTexture = createPlanetTexture('#ffdd66', 512, true);
       const sunMaterial = new THREE.MeshBasicMaterial({ 
         map: sunTexture,
-        emissive: new THREE.Color(0xffdd66),
-        emissiveIntensity: 1
+        color: 0xffdd66
       });
+      
+      // Add a glow effect to the sun
+      const sunGlowGeometry = new THREE.SphereGeometry(5.3, 32, 32);
+      const sunGlowMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffdd66,
+        transparent: true,
+        opacity: 0.3,
+        side: THREE.BackSide
+      });
+      
       const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+      const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
+      
       solarSystem.add(sun);
+      solarSystem.add(sunGlow);
       
       // Helper function to create planet texture
-      function createPlanetTexture(baseColor, size, isSun = false) {
+      function createPlanetTexture(baseColor: string, size: number, isSun = false) {
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
@@ -190,12 +202,13 @@ const AnimatedBackground = () => {
             const y = Math.random() * size;
             const radius = Math.random() * 20 + 5;
             
-            const color = ctx.fillStyle;
-            const r = parseInt(color.toString().substr(1, 2), 16);
-            const g = parseInt(color.toString().substr(3, 2), 16);
-            const b = parseInt(color.toString().substr(5, 2), 16);
+            // Get the current color
+            const baseColorObj = new THREE.Color(baseColor);
+            const r = Math.floor(baseColorObj.r * 255);
+            const g = Math.floor(baseColorObj.g * 255);
+            const b = Math.floor(baseColorObj.b * 255);
             
-            const variation = Math.random() * 30 - 15;
+            const variation = Math.floor(Math.random() * 30 - 15);
             ctx.fillStyle = `rgb(${r + variation}, ${g + variation}, ${b + variation})`;
             
             ctx.beginPath();
@@ -208,31 +221,70 @@ const AnimatedBackground = () => {
         return texture;
       }
       
-      // Planet data: [size, distance, color, rotationSpeed, orbitSpeed]
+      // More accurate planet data: [size, distance, color, rotationSpeed, orbitSpeed, inclination, eccentricity]
       const planetData = [
-        [0.4, 10, '#a6a6a6', 0.02, 0.08], // Mercury
-        [0.8, 15, '#e6c686', 0.015, 0.07], // Venus
-        [1.0, 20, '#6b93d6', 0.01, 0.06],  // Earth
-        [0.6, 25, '#c1440e', 0.012, 0.05], // Mars
-        [2.5, 35, '#e0ae6f', 0.005, 0.04], // Jupiter
-        [2.2, 45, '#d2b487', 0.006, 0.03], // Saturn
-        [1.8, 55, '#91aeca', 0.007, 0.02], // Uranus
-        [1.7, 65, '#5b76a9', 0.008, 0.01]  // Neptune
+        [0.4, 10, '#a6a6a6', 0.02, 0.08, 0.034, 0.205], // Mercury
+        [0.8, 15, '#e6c686', 0.015, 0.07, 0.009, 0.007], // Venus
+        [1.0, 20, '#6b93d6', 0.01, 0.06, 0.0, 0.017],    // Earth
+        [0.6, 25, '#c1440e', 0.012, 0.05, 0.032, 0.093], // Mars
+        [2.5, 35, '#e0ae6f', 0.005, 0.04, 0.023, 0.048], // Jupiter
+        [2.2, 45, '#d2b487', 0.006, 0.03, 0.043, 0.056], // Saturn
+        [1.8, 55, '#91aeca', 0.007, 0.02, 0.013, 0.046], // Uranus
+        [1.7, 65, '#5b76a9', 0.008, 0.01, 0.030, 0.010]  // Neptune
       ];
       
-      const planets = [];
+      const planets: {
+        planet: THREE.Mesh,
+        orbit: THREE.Group,
+        rotationSpeed: number,
+        orbitSpeed: number,
+        orbitPath?: THREE.Line,
+        distance: number,
+        inclination: number,
+        eccentricity: number,
+        phase: number,
+        moons?: Array<{moon: THREE.Mesh, orbit: THREE.Group, rotationSpeed: number, orbitSpeed: number, distance: number}>
+      }[] = [];
+      
+      // Create orbit visualizations
+      const createOrbitPath = (distance: number, eccentricity: number) => {
+        const curve = new THREE.EllipseCurve(
+          0, 0,
+          distance, distance * (1 - eccentricity),
+          0, 2 * Math.PI,
+          false,
+          0
+        );
+        
+        const points = curve.getPoints(100);
+        const orbitGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const orbitMaterial = new THREE.LineBasicMaterial({
+          color: 0x444444,
+          transparent: true,
+          opacity: 0.2
+        });
+        
+        return new THREE.Line(orbitGeometry, orbitMaterial);
+      };
       
       // Create planets
       for (let i = 0; i < planetData.length; i++) {
-        const [size, distance, color, rotationSpeed, orbitSpeed] = planetData[i];
+        const [size, distance, color, rotationSpeed, orbitSpeed, inclination, eccentricity] = planetData[i];
+        
+        // Create orbit visualization
+        const orbitPath = createOrbitPath(distance as number, eccentricity as number);
+        orbitPath.rotation.x = Math.PI / 2; // Rotate to horizontal plane
+        orbitPath.rotation.z = (inclination as number) * Math.PI;
+        solarSystem.add(orbitPath);
         
         // Planet orbit
         const orbit = new THREE.Group();
+        orbit.rotation.z = (inclination as number) * Math.PI;
         solarSystem.add(orbit);
         
         // Planet
-        const planetGeometry = new THREE.SphereGeometry(size, 32, 32);
-        const planetTexture = createPlanetTexture(color, 256);
+        const planetGeometry = new THREE.SphereGeometry(size as number, 32, 32);
+        const planetTexture = createPlanetTexture(color as string, 256);
         const planetMaterial = new THREE.MeshStandardMaterial({ 
           map: planetTexture,
           roughness: 0.7,
@@ -240,29 +292,67 @@ const AnimatedBackground = () => {
         });
         
         const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-        planet.position.x = distance;
+        planet.position.x = distance as number;
         orbit.add(planet);
         
         // Add rings to Saturn
         if (i === 5) { // Saturn
-          const ringGeometry = new THREE.RingGeometry(size * 1.4, size * 2.2, 64);
+          const innerRadius = (size as number) * 1.4;
+          const outerRadius = (size as number) * 2.2;
+          const ringGeometry = new THREE.RingGeometry(innerRadius, outerRadius, 64);
+          
+          // Create a more detailed ring texture
+          const ringCanvas = document.createElement('canvas');
+          ringCanvas.width = 512;
+          ringCanvas.height = 128;
+          const ringCtx = ringCanvas.getContext('2d');
+          
+          if (ringCtx) {
+            // Create bands in the rings
+            for (let r = 0; r < 128; r++) {
+              const opacity = Math.sin(r / 128 * Math.PI * 8) * 0.3 + 0.7;
+              ringCtx.fillStyle = `rgba(210, 180, 135, ${opacity})`;
+              ringCtx.fillRect(0, r, 512, 1);
+              
+              // Add some variation
+              if (Math.random() > 0.97) {
+                const darkBand = Math.floor(Math.random() * 2) + 1;
+                ringCtx.fillStyle = 'rgba(100, 80, 60, 0.8)';
+                ringCtx.fillRect(0, r, 512, darkBand);
+                r += darkBand;
+              }
+            }
+          }
+          
+          const ringTexture = new THREE.CanvasTexture(ringCanvas);
+          
           const ringMaterial = new THREE.MeshBasicMaterial({ 
-            color: 0xd2b487,
+            map: ringTexture,
             side: THREE.DoubleSide,
             transparent: true,
             opacity: 0.7
           });
+          
           const ring = new THREE.Mesh(ringGeometry, ringMaterial);
           ring.rotation.x = Math.PI / 2;
           planet.add(ring);
         }
         
+        // Add random phase to each planet
+        const phase = Math.random() * Math.PI * 2;
+        
         // Store data for animation
         planets.push({
           planet,
           orbit,
-          rotationSpeed,
-          orbitSpeed
+          rotationSpeed: rotationSpeed as number,
+          orbitSpeed: orbitSpeed as number,
+          orbitPath,
+          distance: distance as number,
+          inclination: inclination as number,
+          eccentricity: eccentricity as number,
+          phase,
+          moons: []
         });
         
         // Add moon to Earth
@@ -271,7 +361,62 @@ const AnimatedBackground = () => {
           planet.add(moonOrbit);
           
           const moonGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-          const moonTexture = createPlanetTexture('#cccccc', 128);
+          
+          // Create detailed moon texture
+          const moonCanvas = document.createElement('canvas');
+          moonCanvas.width = 256;
+          moonCanvas.height = 256;
+          const moonCtx = moonCanvas.getContext('2d');
+          
+          if (moonCtx) {
+            // Base gray color
+            moonCtx.fillStyle = '#cccccc';
+            moonCtx.fillRect(0, 0, 256, 256);
+            
+            // Add craters
+            for (let c = 0; c < 50; c++) {
+              const x = Math.random() * 256;
+              const y = Math.random() * 256;
+              const radius = Math.random() * 15 + 2;
+              
+              const craterGradient = moonCtx.createRadialGradient(
+                x, y, 0,
+                x, y, radius
+              );
+              
+              craterGradient.addColorStop(0, 'rgba(90, 90, 90, 1)');
+              craterGradient.addColorStop(0.8, 'rgba(140, 140, 140, 0.8)');
+              craterGradient.addColorStop(1, 'rgba(170, 170, 170, 0)');
+              
+              moonCtx.beginPath();
+              moonCtx.arc(x, y, radius, 0, Math.PI * 2);
+              moonCtx.fillStyle = craterGradient;
+              moonCtx.fill();
+            }
+            
+            // Add mare (dark regions)
+            for (let m = 0; m < 5; m++) {
+              const x = Math.random() * 256;
+              const y = Math.random() * 256;
+              const radius = Math.random() * 50 + 20;
+              
+              const mareGradient = moonCtx.createRadialGradient(
+                x, y, 0,
+                x, y, radius
+              );
+              
+              mareGradient.addColorStop(0, 'rgba(70, 70, 80, 0.8)');
+              mareGradient.addColorStop(1, 'rgba(120, 120, 120, 0)');
+              
+              moonCtx.beginPath();
+              moonCtx.arc(x, y, radius, 0, Math.PI * 2);
+              moonCtx.fillStyle = mareGradient;
+              moonCtx.fill();
+            }
+          }
+          
+          const moonTexture = new THREE.CanvasTexture(moonCanvas);
+          
           const moonMaterial = new THREE.MeshStandardMaterial({ 
             map: moonTexture,
             roughness: 0.8,
@@ -283,12 +428,13 @@ const AnimatedBackground = () => {
           moonOrbit.add(moon);
           
           // Store moon data for animation
-          planets.push({
-            planet: moon,
+          planets[i].moons = [{
+            moon,
             orbit: moonOrbit,
             rotationSpeed: 0.02,
-            orbitSpeed: 0.1
-          });
+            orbitSpeed: 0.1,
+            distance: 2
+          }];
         }
       }
       
@@ -455,10 +601,34 @@ const AnimatedBackground = () => {
       const animationId = requestAnimationFrame(animate);
       const time = Date.now() * 0.001;
       
-      // Animate the planets
-      planets.forEach(({ planet, orbit, rotationSpeed, orbitSpeed }) => {
-        planet.rotation.y += rotationSpeed;
-        orbit.rotation.y += orbitSpeed * 0.005;
+      // Animate the planets with Kepler's laws of motion (elliptical orbits)
+      planets.forEach((planetData) => {
+        // Rotate planet around its axis
+        planetData.planet.rotation.y += planetData.rotationSpeed;
+        
+        // Calculate elliptical orbit position
+        const a = planetData.distance; // semi-major axis
+        const e = planetData.eccentricity; // eccentricity
+        const angle = time * planetData.orbitSpeed + planetData.phase;
+        
+        // Position on ellipse
+        const x = a * Math.cos(angle);
+        const z = a * (1 - e * e) * Math.sin(angle) / (1 + e * Math.cos(angle));
+        
+        // Apply position to planet's orbit group
+        planetData.orbit.position.x = 0;
+        planetData.orbit.position.z = 0;
+        planetData.planet.position.x = x;
+        planetData.planet.position.z = z;
+        
+        // Animate any moons
+        if (planetData.moons) {
+          planetData.moons.forEach(moonData => {
+            moonData.moon.rotation.y += moonData.rotationSpeed;
+            const moonAngle = time * moonData.orbitSpeed;
+            moonData.orbit.rotation.y = moonAngle;
+          });
+        }
       });
       
       // Animate the cosmic circles
@@ -469,7 +639,7 @@ const AnimatedBackground = () => {
             
             // Add pulsating effect
             if (child.userData.pulseSpeed) {
-              const pulseValue = Math.sin(Date.now() * child.userData.pulseSpeed + child.userData.pulsePhase) * 0.2 + 0.8;
+              const pulseValue = Math.sin(time * child.userData.pulseSpeed + child.userData.pulsePhase) * 0.2 + 0.8;
               
               if ('material' in child && child.material instanceof THREE.Material) {
                 child.material.opacity = pulseValue * 0.7;
