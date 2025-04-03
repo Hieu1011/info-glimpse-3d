@@ -1,6 +1,6 @@
 
-import React, { useRef } from 'react';
-import { Points, useTexture } from '@react-three/drei';
+import React, { useRef, useMemo } from 'react';
+import { Points } from '@react-three/drei';
 import useStarField from '../hooks/useStarField';
 import * as THREE from 'three';
 
@@ -10,9 +10,42 @@ const StarField = ({ count = 7000 }) => {
   const mediumStarsRef = useRef();
   const largeStarsRef = useRef();
   
-  // Load star texture for more realistic point sprites
-  const starTexture = useTexture('/star-texture.png');
-  starTexture.encoding = THREE.sRGBEncoding;
+  // Create star texture programmatically instead of loading from file
+  const starTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    
+    if (ctx) {
+      // Clear canvas
+      ctx.fillStyle = 'rgba(0,0,0,0)';
+      ctx.fillRect(0, 0, 64, 64);
+      
+      // Create radial gradient for star
+      const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gradient.addColorStop(0, 'rgba(255,255,255,1)');
+      gradient.addColorStop(0.4, 'rgba(255,255,255,0.8)');
+      gradient.addColorStop(0.8, 'rgba(255,255,255,0.2)');
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 64, 64);
+      
+      // Add a slight bloom effect
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = 0.4;
+      ctx.filter = 'blur(4px)';
+      ctx.fillStyle = 'rgba(200,220,255,0.5)';
+      ctx.beginPath();
+      ctx.arc(32, 32, 16, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.encoding = THREE.sRGBEncoding;
+    return texture;
+  }, []);
   
   return (
     <group>
