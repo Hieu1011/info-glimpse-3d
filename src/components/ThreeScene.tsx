@@ -1,15 +1,13 @@
-
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, OrbitControls, PerspectiveCamera, Text, Float, Stars } from '@react-three/drei';
 import * as THREE from 'three';
-import { StarField } from './solar-system/components/StarField';
+import StarField from './solar-system/components/StarField';
 
 const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
   const sunRef = useRef();
   const coronaRef = useRef();
   
-  // Create realistic sun texture with solar flares and granulation
   const sunTexture = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
@@ -17,7 +15,6 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
     const ctx = canvas.getContext('2d');
     
     if (ctx) {
-      // Base sun color
       const gradient = ctx.createRadialGradient(
         512, 512, 0,
         512, 512, 512
@@ -30,7 +27,6 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 1024, 1024);
       
-      // Add solar granulation texture
       ctx.globalAlpha = 0.15;
       for (let i = 0; i < 8000; i++) {
         const x = Math.random() * 1024;
@@ -42,7 +38,6 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
         ctx.fill();
       }
       
-      // Add solar flares
       ctx.globalAlpha = 0.7;
       for (let i = 0; i < 12; i++) {
         const flareSize = Math.random() * 150 + 50;
@@ -65,7 +60,6 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
         ctx.fill();
       }
       
-      // Add sunspots
       ctx.globalAlpha = 0.8;
       for (let i = 0; i < 8; i++) {
         const distance = Math.random() * 300 + 100;
@@ -97,17 +91,14 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
     
     const time = state.clock.getElapsedTime();
     
-    // Slowly rotate the sun
     sunRef.current.rotation.y = time * 0.05;
     
-    // Pulsate the corona
     const pulseFactor = (Math.sin(time * 0.5) * 0.05) + 1;
     coronaRef.current.scale.set(pulseFactor, pulseFactor, pulseFactor);
   });
   
   return (
     <group position={[position[0], position[1], position[2]]}>
-      {/* Main sun sphere */}
       <mesh ref={sunRef}>
         <sphereGeometry args={[size, 64, 64]} />
         <meshStandardMaterial 
@@ -118,7 +109,6 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
         />
       </mesh>
       
-      {/* Inner corona */}
       <mesh ref={coronaRef}>
         <sphereGeometry args={[size * 1.3, 32, 32]} />
         <meshBasicMaterial 
@@ -129,7 +119,6 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
         />
       </mesh>
       
-      {/* Outer corona */}
       <mesh>
         <sphereGeometry args={[size * 2.0, 32, 32]} />
         <meshBasicMaterial 
@@ -140,7 +129,6 @@ const Sun = ({ position = [0, 0, 0], size = 0.8 }) => {
         />
       </mesh>
       
-      {/* Sun glow */}
       <mesh>
         <sphereGeometry args={[size * 2.5, 32, 32]} />
         <meshBasicMaterial 
@@ -161,34 +149,28 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
   const groupRef = useRef();
   const atmosphereRef = useRef();
   
-  // Create realistic earth textures
   const [earthTexture, earthBumpMap, earthSpecularMap, cloudsTexture] = useMemo(() => {
-    // Earth surface texture
     const surface = document.createElement('canvas');
     surface.width = 1024;
     surface.height = 512;
     const surfaceCtx = surface.getContext('2d');
     
-    // Earth bump map
     const bump = document.createElement('canvas');
     bump.width = 1024;
     bump.height = 512;
     const bumpCtx = bump.getContext('2d');
     
-    // Earth specular map
     const specular = document.createElement('canvas');
     specular.width = 1024;
     specular.height = 512;
     const specularCtx = specular.getContext('2d');
     
-    // Clouds texture
     const clouds = document.createElement('canvas');
     clouds.width = 1024;
     clouds.height = 512;
     const cloudsCtx = clouds.getContext('2d');
     
     if (surfaceCtx && bumpCtx && specularCtx && cloudsCtx) {
-      // Draw oceans
       surfaceCtx.fillStyle = '#0077be';
       surfaceCtx.fillRect(0, 0, 1024, 512);
       
@@ -198,18 +180,16 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
       specularCtx.fillStyle = '#333333';
       specularCtx.fillRect(0, 0, 1024, 512);
       
-      // Draw continents (simplified shapes)
       const continents = [
-        {x: 200, y: 100, width: 300, height: 200}, // North America
-        {x: 550, y: 100, width: 200, height: 150}, // Europe
-        {x: 650, y: 150, width: 150, height: 200}, // Asia
-        {x: 530, y: 250, width: 100, height: 150}, // Africa
-        {x: 250, y: 300, width: 150, height: 150}, // South America
-        {x: 800, y: 350, width: 120, height: 80},  // Australia
+        {x: 200, y: 100, width: 300, height: 200},
+        {x: 550, y: 100, width: 200, height: 150},
+        {x: 650, y: 150, width: 150, height: 200},
+        {x: 530, y: 250, width: 100, height: 150},
+        {x: 250, y: 300, width: 150, height: 150},
+        {x: 800, y: 350, width: 120, height: 80},
       ];
       
       continents.forEach(c => {
-        // Draw continent with jagged edges
         for (let i = 0; i < 800; i++) {
           const x = c.x + Math.random() * c.width;
           const y = c.y + Math.random() * c.height;
@@ -225,13 +205,11 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
           surfaceCtx.fillStyle = gradient;
           surfaceCtx.fill();
           
-          // Bump map (height)
           bumpCtx.beginPath();
           bumpCtx.arc(x, y, radius, 0, Math.PI * 2);
           bumpCtx.fillStyle = '#ffffff';
           bumpCtx.fill();
           
-          // No specular on land
           specularCtx.beginPath();
           specularCtx.arc(x, y, radius, 0, Math.PI * 2);
           specularCtx.fillStyle = '#000000';
@@ -239,15 +217,12 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
         }
       });
       
-      // Add ice caps
       for (let i = 0; i < 800; i++) {
         const radius = Math.random() * 15 + 5;
         
-        // North pole
         const nx = Math.random() * 1024;
         const ny = Math.random() * 100;
         
-        // South pole
         const sx = Math.random() * 1024;
         const sy = 512 - Math.random() * 100;
         
@@ -261,7 +236,6 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
         surfaceCtx.fillStyle = '#ffffff';
         surfaceCtx.fill();
         
-        // Ice caps in bump map
         bumpCtx.beginPath();
         bumpCtx.arc(nx, ny, radius, 0, Math.PI * 2);
         bumpCtx.fillStyle = '#cccccc';
@@ -273,7 +247,6 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
         bumpCtx.fill();
       }
       
-      // Generate cloud patterns
       for (let i = 0; i < 100; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
@@ -307,14 +280,11 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
     if (!earthRef.current || !cloudsRef.current || !groupRef.current || !atmosphereRef.current) return;
     const t = clock.getElapsedTime();
     
-    // Rotate earth and clouds
     earthRef.current.rotation.y += 0.002;
-    cloudsRef.current.rotation.y += 0.0025; // Clouds move slightly faster
+    cloudsRef.current.rotation.y += 0.0025;
     
-    // Orbit around the sun
     groupRef.current.rotation.y = t * orbitSpeed;
     
-    // Subtle pulsing atmosphere
     const pulseFactor = Math.sin(t * 0.5) * 0.01 + 1;
     atmosphereRef.current.scale.set(pulseFactor, pulseFactor, pulseFactor);
   });
@@ -322,7 +292,6 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
   return (
     <group ref={groupRef}>
       <group position={[orbitRadius, position[1], position[2]]}>
-        {/* Earth surface */}
         <mesh ref={earthRef}>
           <sphereGeometry args={[size, 64, 32]} />
           <meshPhongMaterial 
@@ -335,7 +304,6 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
           />
         </mesh>
         
-        {/* Clouds layer */}
         <mesh ref={cloudsRef}>
           <sphereGeometry args={[size * 1.02, 64, 32]} />
           <meshPhongMaterial 
@@ -346,7 +314,6 @@ const Earth = ({ position = [0, 0, 0], size = 0.25, orbitRadius = 3, orbitSpeed 
           />
         </mesh>
         
-        {/* Atmosphere glow */}
         <mesh ref={atmosphereRef}>
           <sphereGeometry args={[size * 1.15, 64, 32]} />
           <meshBasicMaterial 
@@ -366,29 +333,24 @@ const Mars = ({ position = [0, 0, 0], size = 0.18, orbitRadius = 4.5, orbitSpeed
   const marsRef = useRef();
   const groupRef = useRef();
   
-  // Create realistic Mars texture
   const [marsTexture, marsBumpMap] = useMemo(() => {
-    // Mars surface texture
     const surface = document.createElement('canvas');
     surface.width = 1024;
     surface.height = 512;
     const surfaceCtx = surface.getContext('2d');
     
-    // Mars bump map
     const bump = document.createElement('canvas');
     bump.width = 1024;
     bump.height = 512;
     const bumpCtx = bump.getContext('2d');
     
     if (surfaceCtx && bumpCtx) {
-      // Base rusty red color
       surfaceCtx.fillStyle = '#c1440e';
       surfaceCtx.fillRect(0, 0, 1024, 512);
       
       bumpCtx.fillStyle = '#777777';
       bumpCtx.fillRect(0, 0, 1024, 512);
       
-      // Surface variations
       for (let i = 0; i < 20000; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
@@ -404,19 +366,17 @@ const Mars = ({ position = [0, 0, 0], size = 0.18, orbitRadius = 4.5, orbitSpeed
         surfaceCtx.fillStyle = `rgb(${r},${g},${b})`;
         surfaceCtx.fill();
         
-        // Corresponding bump
         bumpCtx.beginPath();
         bumpCtx.arc(x, y, radius, 0, Math.PI * 2);
         bumpCtx.fillStyle = `rgb(${128 + shade},${128 + shade},${128 + shade})`;
         bumpCtx.fill();
       }
       
-      // Add large features (Olympus Mons, Valles Marineris, etc.)
       const features = [
-        {x: 512, y: 256, radius: 120, type: 'mountain'}, // Olympus Mons
-        {x: 700, y: 256, width: 300, height: 40, type: 'canyon'}, // Valles Marineris
-        {x: 300, y: 180, radius: 100, type: 'basin'}, // Hellas Planitia
-        {x: 400, y: 300, radius: 80, type: 'basin'}, // Argyre Planitia
+        {x: 512, y: 256, radius: 120, type: 'mountain'},
+        {x: 700, y: 256, width: 300, height: 40, type: 'canyon'},
+        {x: 300, y: 180, radius: 100, type: 'basin'},
+        {x: 400, y: 300, radius: 80, type: 'basin'},
       ];
       
       features.forEach(feature => {
@@ -434,7 +394,6 @@ const Mars = ({ position = [0, 0, 0], size = 0.18, orbitRadius = 4.5, orbitSpeed
           surfaceCtx.fillStyle = gradient;
           surfaceCtx.fill();
           
-          // Bump for mountain
           const bumpGradient = bumpCtx.createRadialGradient(
             feature.x, feature.y, 0,
             feature.x, feature.y, feature.radius
@@ -450,7 +409,6 @@ const Mars = ({ position = [0, 0, 0], size = 0.18, orbitRadius = 4.5, orbitSpeed
           surfaceCtx.fillStyle = '#992211';
           surfaceCtx.fillRect(feature.x, feature.y, feature.width, feature.height);
           
-          // Bump for canyon
           bumpCtx.fillStyle = '#333333';
           bumpCtx.fillRect(feature.x, feature.y, feature.width, feature.height);
         } else if (feature.type === 'basin') {
@@ -467,7 +425,6 @@ const Mars = ({ position = [0, 0, 0], size = 0.18, orbitRadius = 4.5, orbitSpeed
           surfaceCtx.fillStyle = gradient;
           surfaceCtx.fill();
           
-          // Bump for basin
           const bumpGradient = bumpCtx.createRadialGradient(
             feature.x, feature.y, 0,
             feature.x, feature.y, feature.radius
@@ -482,15 +439,12 @@ const Mars = ({ position = [0, 0, 0], size = 0.18, orbitRadius = 4.5, orbitSpeed
         }
       });
       
-      // Add polar ice caps
       for (let i = 0; i < 500; i++) {
         const radius = Math.random() * 10 + 3;
         
-        // North pole
         const nx = Math.random() * 1024;
         const ny = Math.random() * 80;
         
-        // South pole
         const sx = Math.random() * 1024;
         const sy = 512 - Math.random() * 80;
         
@@ -516,10 +470,8 @@ const Mars = ({ position = [0, 0, 0], size = 0.18, orbitRadius = 4.5, orbitSpeed
     if (!marsRef.current || !groupRef.current) return;
     const t = clock.getElapsedTime();
     
-    // Rotate Mars
     marsRef.current.rotation.y += 0.003;
     
-    // Orbit around the sun
     groupRef.current.rotation.y = t * orbitSpeed;
   });
   
@@ -546,7 +498,6 @@ const Jupiter = ({ position = [0, 0, 0], size = 0.5, orbitRadius = 6.5, orbitSpe
   const jupiterRef = useRef();
   const groupRef = useRef();
   
-  // Create realistic Jupiter texture
   const jupiterTexture = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
@@ -554,7 +505,6 @@ const Jupiter = ({ position = [0, 0, 0], size = 0.5, orbitRadius = 6.5, orbitSpe
     const ctx = canvas.getContext('2d');
     
     if (ctx) {
-      // Base color
       const gradient = ctx.createLinearGradient(0, 0, 0, 512);
       gradient.addColorStop(0, '#e0ae6f');
       gradient.addColorStop(0.3, '#d9a05b');
@@ -565,7 +515,6 @@ const Jupiter = ({ position = [0, 0, 0], size = 0.5, orbitRadius = 6.5, orbitSpe
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 1024, 512);
       
-      // Add bands
       const bands = [
         {y: 100, height: 40, color: '#aa7039'},
         {y: 170, height: 30, color: '#d4b67e'},
@@ -578,7 +527,6 @@ const Jupiter = ({ position = [0, 0, 0], size = 0.5, orbitRadius = 6.5, orbitSpe
         ctx.fillStyle = band.color;
         ctx.fillRect(0, band.y, 1024, band.height);
         
-        // Add turbulence to bands
         ctx.globalAlpha = 0.4;
         for (let x = 0; x < 1024; x += 4) {
           const height = Math.sin(x * 0.05) * 10 + Math.random() * 5;
@@ -594,7 +542,6 @@ const Jupiter = ({ position = [0, 0, 0], size = 0.5, orbitRadius = 6.5, orbitSpe
         ctx.globalAlpha = 1;
       });
       
-      // Add Great Red Spot
       const spotGradient = ctx.createRadialGradient(
         300, 230, 0,
         300, 230, 80
@@ -608,7 +555,6 @@ const Jupiter = ({ position = [0, 0, 0], size = 0.5, orbitRadius = 6.5, orbitSpe
       ctx.fillStyle = spotGradient;
       ctx.fill();
       
-      // Add detailed turbulence and storms
       for (let i = 0; i < 200; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
@@ -636,10 +582,8 @@ const Jupiter = ({ position = [0, 0, 0], size = 0.5, orbitRadius = 6.5, orbitSpe
     if (!jupiterRef.current || !groupRef.current) return;
     const t = clock.getElapsedTime();
     
-    // Jupiter rotates quite fast
     jupiterRef.current.rotation.y += 0.004;
     
-    // Orbit around the sun
     groupRef.current.rotation.y = t * orbitSpeed;
   });
   
@@ -665,22 +609,18 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
   const ringsRef = useRef();
   const groupRef = useRef();
   
-  // Create realistic Saturn and rings textures
   const [saturnTexture, ringsTexture] = useMemo(() => {
-    // Saturn surface
     const surface = document.createElement('canvas');
     surface.width = 1024;
     surface.height = 512;
     const surfaceCtx = surface.getContext('2d');
     
-    // Saturn rings
     const rings = document.createElement('canvas');
     rings.width = 1024;
     rings.height = 256;
     const ringsCtx = rings.getContext('2d');
     
     if (surfaceCtx && ringsCtx) {
-      // Base Saturn color
       const gradient = surfaceCtx.createLinearGradient(0, 0, 0, 512);
       gradient.addColorStop(0, '#d2b487');
       gradient.addColorStop(0.3, '#c9ad7e');
@@ -691,7 +631,6 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
       surfaceCtx.fillStyle = gradient;
       surfaceCtx.fillRect(0, 0, 1024, 512);
       
-      // Add bands similar to Jupiter but more subtle
       const bands = [
         {y: 110, height: 30, color: '#bfa476'},
         {y: 180, height: 20, color: '#d9c49d'},
@@ -704,7 +643,6 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
         surfaceCtx.fillStyle = band.color;
         surfaceCtx.fillRect(0, band.y, 1024, band.height);
         
-        // Add subtle details to bands
         surfaceCtx.globalAlpha = 0.3;
         for (let x = 0; x < 1024; x += 4) {
           const height = Math.sin(x * 0.03) * 8 + Math.random() * 4;
@@ -720,7 +658,6 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
         surfaceCtx.globalAlpha = 1;
       });
       
-      // Add subtle storms
       for (let i = 0; i < 150; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
@@ -740,44 +677,36 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
         surfaceCtx.restore();
       }
       
-      // Create detailed ring texture
-      // First clear with transparency
       ringsCtx.clearRect(0, 0, 1024, 256);
       
-      // Create ring bands with gaps
       const ringBands = [
-        {start: 0, end: 20, opacity: 0.1},     // Innermost faint ring
-        {start: 20, end: 30, opacity: 0},      // Gap
-        {start: 30, end: 70, opacity: 0.4},    // B ring (brightest)
-        {start: 70, end: 75, opacity: 0.1},    // Cassini Division (gap)
-        {start: 75, end: 100, opacity: 0.3},   // A ring
-        {start: 100, end: 105, opacity: 0.05}, // Encke Gap
-        {start: 105, end: 128, opacity: 0.2}   // Outer A ring
+        {start: 0, end: 20, opacity: 0.1},
+        {start: 20, end: 30, opacity: 0},
+        {start: 30, end: 70, opacity: 0.4},
+        {start: 70, end: 75, opacity: 0.1},
+        {start: 75, end: 100, opacity: 0.3},
+        {start: 100, end: 105, opacity: 0.05},
+        {start: 105, end: 128, opacity: 0.2}
       ];
       
       ringBands.forEach(band => {
         for (let r = band.start; r < band.end; r++) {
           for (let theta = 0; theta < 1024; theta += 1) {
-            // Add some variation to each ring particle
             const noise = Math.random() * 0.2;
             const alpha = band.opacity * (1 - noise);
             
-            // Color variation from cream to light brown
-            const colorNoise = Math.random() * 20;
-            const r = 210 - colorNoise;
-            const g = 180 - colorNoise;
-            const b = 135 - colorNoise;
+            const r = 210 - Math.random() * 20;
+            const g = 180 - Math.random() * 20;
+            const b = 135 - Math.random() * 20;
             
             ringsCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
             
-            // Place each particle
-            const y = r + 64; // Center on the canvas height
+            const y = r + 64;
             ringsCtx.fillRect(theta, y, 1, 1);
           }
         }
       });
       
-      // Add some radial structures in the rings
       for (let i = 0; i < 100; i++) {
         const startX = Math.random() * 1024;
         const width = Math.random() * 10 + 5;
@@ -806,21 +735,16 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
     if (!saturnRef.current || !ringsRef.current || !groupRef.current) return;
     const t = clock.getElapsedTime();
     
-    // Saturn rotation
     saturnRef.current.rotation.y += 0.003;
     
-    // Rings don't rotate with the planet
-    // Just add a slight wobble to the rings
     ringsRef.current.rotation.x = Math.sin(t * 0.15) * 0.02 + 0.2;
     
-    // Orbit around the sun
     groupRef.current.rotation.y = t * orbitSpeed;
   });
   
   return (
     <group ref={groupRef}>
       <group position={[orbitRadius, position[1], position[2]]}>
-        {/* Saturn planet */}
         <mesh ref={saturnRef}>
           <sphereGeometry args={[size, 64, 32]} />
           <meshStandardMaterial 
@@ -830,7 +754,6 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
           />
         </mesh>
         
-        {/* Saturn rings */}
         <mesh ref={ringsRef} rotation={[0.2, 0, 0]}>
           <ringGeometry args={[size * 1.3, size * 2.5, 128]} />
           <meshStandardMaterial 
@@ -848,10 +771,10 @@ const Saturn = ({ position = [0, 0, 0], size = 0.45, orbitRadius = 9, orbitSpeed
 
 const OrbitLines = () => {
   const orbits = [
-    { radius: 3, color: '#3366cc' },    // Earth
-    { radius: 4.5, color: '#cc6633' },  // Mars
-    { radius: 6.5, color: '#ccaa66' },  // Jupiter
-    { radius: 9, color: '#ccbb88' }     // Saturn
+    { radius: 3, color: '#3366cc' },
+    { radius: 4.5, color: '#cc6633' },
+    { radius: 6.5, color: '#ccaa66' },
+    { radius: 9, color: '#ccbb88' }
   ];
   
   return (
