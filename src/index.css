@@ -75,6 +75,12 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+  }
+  
+  /* Enhanced star glow effect */
+  canvas {
+    filter: blur(0);
   }
 }
 
@@ -122,5 +128,24 @@
   
   .scroll-indicator-dot {
     @apply w-2 h-2 bg-primary rounded-full my-1 animate-pulse;
+  }
+  
+  /* Enhanced space effects */
+  .space-depth {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+  
+  .star-glow {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+  }
+  
+  .planet-shadow {
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+  }
+  
+  .nebula-effect {
+    background: radial-gradient(ellipse at center, rgba(63, 94, 251, 0.2) 0%, rgba(252, 70, 107, 0) 70%);
+    mix-blend-mode: screen;
   }
 }

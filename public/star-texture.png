@@ -1,0 +1,10 @@
+
+[This is a binary file that can't be written as text. I will describe how to create it instead]
+
+To create the star-texture.png file:
+1. Create a 64x64 pixel transparent PNG image
+2. Draw a white circular gradient that is brightest in the center and fades to transparent at the edges
+3. Add a slight glow effect around the edges
+4. Save it as star-texture.png in the public directory
+
+Alternatively, you can use an online tool to create a star texture or download a free star texture from a resource website.
