@@ -1,6 +1,7 @@
+
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, OrbitControls, PerspectiveCamera, Text, Float, Stars } from '@react-three/drei';
+import { useGLTF, OrbitControls, PerspectiveCamera, Text, Float } from '@react-three/drei';
 import * as THREE from 'three';
 import StarField from './solar-system/components/StarField';
 
@@ -798,21 +799,21 @@ const CameraController = () => {
   const { camera, gl } = useThree();
   
   useEffect(() => {
-    camera.position.set(0, 2, 11);
+    camera.position.set(0, 4, 14);
   }, [camera]);
 
   return <OrbitControls 
     enableZoom={true} 
-    minDistance={5}
-    maxDistance={20}
-    enablePan={false} 
+    minDistance={3}
+    maxDistance={25}
+    enablePan={true} 
     enableRotate={true} 
-    minPolarAngle={Math.PI / 3} 
-    maxPolarAngle={Math.PI / 1.8} 
+    minPolarAngle={0} 
+    maxPolarAngle={Math.PI} 
     target={new THREE.Vector3(0, 0, 0)} 
     args={[camera, gl.domElement]} 
     autoRotate 
-    autoRotateSpeed={0.3} 
+    autoRotateSpeed={0.2}
   />;
 };
 
@@ -825,7 +826,7 @@ export const ThreeScene = () => {
         <ambientLight intensity={0.05} />
         <hemisphereLight args={['#0044aa', '#000000', 0.2]} />
         
-        <PerspectiveCamera makeDefault position={[0, 2, 11]} fov={50} />
+        <PerspectiveCamera makeDefault position={[0, 4, 14]} fov={50} />
         <CameraController />
         
         <StarField count={7000} />
