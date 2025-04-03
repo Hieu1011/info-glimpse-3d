@@ -1,4 +1,3 @@
-
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, OrbitControls, PerspectiveCamera, Text, Float } from '@react-three/drei';
@@ -799,21 +798,21 @@ const CameraController = () => {
   const { camera, gl } = useThree();
   
   useEffect(() => {
-    camera.position.set(0, 4, 14);
+    camera.position.set(0, 5, 15);
   }, [camera]);
 
   return <OrbitControls 
     enableZoom={true} 
-    minDistance={3}
-    maxDistance={25}
+    minDistance={2}
+    maxDistance={30}
     enablePan={true} 
     enableRotate={true} 
     minPolarAngle={0} 
     maxPolarAngle={Math.PI} 
     target={new THREE.Vector3(0, 0, 0)} 
     args={[camera, gl.domElement]} 
-    autoRotate 
-    autoRotateSpeed={0.2}
+    autoRotate={false}
+    zoomSpeed={1.5}
   />;
 };
 
@@ -826,7 +825,7 @@ export const ThreeScene = () => {
         <ambientLight intensity={0.05} />
         <hemisphereLight args={['#0044aa', '#000000', 0.2]} />
         
-        <PerspectiveCamera makeDefault position={[0, 4, 14]} fov={50} />
+        <PerspectiveCamera makeDefault position={[0, 5, 15]} fov={50} />
         <CameraController />
         
         <StarField count={7000} />
@@ -838,20 +837,6 @@ export const ThreeScene = () => {
         <Saturn position={[0, 0, 0]} size={0.45} orbitRadius={9} orbitSpeed={0.06} />
         
         <OrbitLines />
-        
-        <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-          <Text
-            position={[0, 3.5, 0]}
-            fontSize={0.5}
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
-            maxWidth={10}
-            textAlign="center"
-          >
-            SOLAR SYSTEM
-          </Text>
-        </Float>
       </Canvas>
     </div>
   );
